@@ -89,11 +89,11 @@ app.engine('hbs',exphbs({
 
 
 //Define Routes
-// app.get("/", (req, res)=>{
-//     res.render("admin/index", {layout: 'landingPage'});
-// });
-app.use("/auth", require("./routes/auth"));
-app.use("/", require("./routes/pages"));
+app.get("/", (req, res)=>{
+    res.render("admin/index", {layout: 'landingPage'});
+});
+// app.use("/auth", require("./routes/auth"));
+// app.use("/", require("./routes/pages"));
 
 app.listen(PORT, ()=> console.log(`Listening on Port ${PORT}`));
 
