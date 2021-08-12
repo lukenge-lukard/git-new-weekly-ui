@@ -249,7 +249,7 @@ exports.update = (req, res) => {
   
         connection.query(
           "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ date_of_birth: date }, 1],
+          [{ date_of_birth: date }, req.session.user.user_id],
           (error, results) => {
             connection.release();
 
@@ -258,7 +258,7 @@ exports.update = (req, res) => {
             } else {
               pool.getConnection((err, connection) => {
                   if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                       connection.release();                      
                       if(!err){
                           req.session.msg = "Date Updated";
@@ -282,7 +282,7 @@ exports.update = (req, res) => {
   
         connection.query(
           "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ phone_number: phoneNumber }, 1],
+          [{ phone_number: phoneNumber }, req.session.user.user_id],
           (error, results) => {
             connection.release();
 
@@ -291,7 +291,7 @@ exports.update = (req, res) => {
             } else {
               pool.getConnection((err, connection) => {
                   if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                       connection.release();                      
                       if(!err){
                           req.session.msg = "Phone Number Updated";
@@ -312,7 +312,7 @@ exports.update = (req, res) => {
 
       pool.getConnection((err, connection) => {
           if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
               connection.release();                      
               if(!err){
                   req.session.msg = "Fill ALL fields or only ONE in a section and submit";
@@ -332,7 +332,7 @@ exports.update = (req, res) => {
   
         connection.query(
           "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ sex: sex, date_of_birth: date, phone_number: phoneNumber }, 1],
+          [{ sex: sex, date_of_birth: date, phone_number: phoneNumber }, req.session.user.user_id],
           (error, results) => {
             connection.release();
 
@@ -341,7 +341,7 @@ exports.update = (req, res) => {
             } else {
               pool.getConnection((err, connection) => {
                   if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                       connection.release();                      
                       if(!err){
                           req.session.msg = "Profile Updated";
@@ -372,7 +372,7 @@ exports.editName = (req, res) => {
 
       pool.getConnection((err, connection) => {
           if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
               connection.release();                      
               if(!err){
                   req.session.msg = "No field filled";
@@ -392,7 +392,7 @@ exports.editName = (req, res) => {
   
         connection.query(
           "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ surname: surname }, 1],
+          [{ surname: surname }, req.session.user.user_id],
           (error, results) => {
             connection.release();
             
@@ -401,7 +401,7 @@ exports.editName = (req, res) => {
             } else {
               pool.getConnection((err, connection) => {
                   if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                       connection.release();                      
                       if(!err){
                           req.session.msg = "Surname Updated";
@@ -426,7 +426,7 @@ exports.editName = (req, res) => {
   
         connection.query(
           "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ firstname: firstname }, 1],
+          [{ firstname: firstname }, req.session.user.user_id],
           (error, results) => {
             connection.release();
 
@@ -435,7 +435,7 @@ exports.editName = (req, res) => {
             } else {
               pool.getConnection((err, connection) => {
                   if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                       connection.release();                      
                       if(!err){
                           req.session.msg = "First Name Updated";
@@ -459,7 +459,7 @@ exports.editName = (req, res) => {
   
         connection.query(
           "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ username: username }, 1],
+          [{ username: username }, req.session.user.user_id],
           (error, results) => {
             connection.release();
 
@@ -468,7 +468,7 @@ exports.editName = (req, res) => {
             } else {
               pool.getConnection((err, connection) => {
                   if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                       connection.release();                      
                       if(!err){
                           req.session.msg = "Username Updated";
@@ -489,7 +489,7 @@ exports.editName = (req, res) => {
 
       pool.getConnection((err, connection) => {
           if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
               connection.release();                      
               if(!err){
                   req.session.msg = "Fill ALL fields or only ONE in a section and submit";
@@ -509,7 +509,7 @@ exports.editName = (req, res) => {
   
         connection.query(
           "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ surname: surname, firstname: firstname, username: username }, 1],
+          [{ surname: surname, firstname: firstname, username: username }, req.session.user.user_id],
           (error, results) => {
             connection.release();
 
@@ -518,7 +518,7 @@ exports.editName = (req, res) => {
             } else {
               pool.getConnection((err, connection) => {
                   if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                       connection.release();                      
                       if(!err){
                           req.session.msg = "Profile Updated";
@@ -548,7 +548,7 @@ exports.editPassword = (req, res) => {
 
       pool.getConnection((err, connection) => {
           if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
               connection.release();                      
               if(!err){
                   req.session.msg = "Please fill all the password fields.";
@@ -568,7 +568,7 @@ exports.editPassword = (req, res) => {
 
       pool.getConnection((err, connection) => {
           if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
               connection.release();                      
               if(!err){
                   req.session.msg = "New Passwords do not match";
@@ -587,7 +587,7 @@ exports.editPassword = (req, res) => {
         
         connection.query(
           "SELECT * FROM tbl_user WHERE user_id = ?",
-          [1],
+          [req.session.user.user_id],
           async (error, results) => {
             // Once done, release connection
             connection.release();
@@ -599,7 +599,7 @@ exports.editPassword = (req, res) => {
   
                 pool.getConnection((err, connection) => {
                     if(err) throw err; //not connected                  
-                    connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                    connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                         connection.release();                      
                         if(!err){
                             req.session.msg = "Password is Incorrect";
@@ -621,7 +621,7 @@ exports.editPassword = (req, res) => {
               
                     connection.query(
                       "UPDATE tbl_user SET ? WHERE user_id = ?",
-                      [{ password: hashedPassword }, 1],
+                      [{ password: hashedPassword }, req.session.user.user_id],
                       (error, results) => {
                         connection.release();
                         
@@ -630,7 +630,7 @@ exports.editPassword = (req, res) => {
                         } else {
                           pool.getConnection((err, connection) => {
                               if(err) throw err; //not connected                  
-                              connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[1], (err, rows) => {
+                              connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
                                   connection.release();                      
                                   if(!err){
                                       req.session.msg = "Password Changed";
@@ -683,27 +683,41 @@ exports.create = (req, res) => {
         connection.query(
           "INSERT INTO tbl_post SET ?",
           { post_title: title, post_date: date},
-          (error, results) => {
+          (postError, postResults) => {
             // Once done, release connection
             connection.release();
 
-            if (error) {
-              console.log(error);
+            if (postError) {
+              console.log(postError);
             } else {
 
-              pool.query(
-                "INSERT INTO tbl_post_paragraphs SET ?",
-              { paragraph: paragraph,  post_id: results.insertId},
-              (error, result) => {
-                if(error){
-                  console.log(error);
-                }else {
-                  console.log("Paragraph created too");
-                  req.session.msg = "New Post Created";
-                  return res.redirect("/create");
-                  
+              pool.query("INSERT INTO tbl_user_vs_post SET ?", { user_id: req.session.user.user_id, post_id: postResults.insertId}, (error, results) => {
+                if(error){console.log(error);} else{
+                  console.log("tbl_user_vs_post reached too!");
+
+                  pool.query(
+                    "INSERT INTO tbl_post_paragraphs SET ?",
+                  { paragraph: paragraph,  post_id: postResults.insertId},
+                  (paraError, paragraphResult) => {
+                    if(paraError){
+                      console.log(paraError);
+                    }else {
+                      console.log("Paragraph created too");
+                      console.log(req.session.user.user_id);
+                      console.log(paragraphResult);
+                      console.log("Post  ID can still be accessed: ");
+                      console.log(postResults.insertId);
+    
+    
+                      req.session.msg = "New Post Created";
+                      return res.redirect("/create");
+                      
+                    }
+                  });
+
                 }
               });
+
 
             }
           }

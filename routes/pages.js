@@ -127,22 +127,16 @@ router.get("/feed", redirectLogin, (req, res)=>{
 router.get("/create", redirectLogin, (req, res)=>{
     pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
         if(!err){
-            pool.query("SELECT * FROM tbl_post JOIN tbl_post_paragraphs ON tbl_post.post_id = tbl_post_paragraphs.post_id ORDER BY tbl_post.post_id DESC", (err, results) => {
+            pool.query("SELECT po.post_title, po.post_date, pa.paragraph, u.surname, u.firstname, u.profile_photo FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_user u ON uvp.user_id = u.user_id ORDER BY po.post_id DESC", (err, results) => {
                 if(!err){
+                    console.log(results);
                     function nl2br(str){
                         return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n\n');
                     }
-                    // console.log(results[0].paragraph);
-                    
-                    // results[0].paragraph = nl2br(results[0].paragraph);
-                    // console.log(results[0].paragraph);
-                    // console.log("     fre    ".trim());
+
                     for(let i = 0; i < results.length; i++){
-                        // console.log(results[i].post_id);
                         results[i].paragraph = nl2br(results[i].paragraph);
                     }
-                    console.log(results.length);
-
 
                     var msg = req.session.msg;
                     req.session.msg = null; 
