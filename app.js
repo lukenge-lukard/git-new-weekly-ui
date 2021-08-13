@@ -7,6 +7,7 @@ const mysql = require("mysql");
 const bodyParser = require('body-parser');
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
+const fs = require('fs');
 
 const app = express();
 
@@ -34,8 +35,18 @@ const pool = mysql.createPool({
     user             : process.env.DATABASE_USER,
     password         : process.env.DATABASE_PASSWORD,
     database         : process.env.DATABASE,
-    port             : process.env.DATABASE_PORT,    
+    port             : process.env.DATABASE_PORT,
+    ssl  : {
+        ca : fs.readFileSync(__dirname + '/ca-certificate.crt')
+      }    
 });
+
+// var connection = mysql.createConnection({
+//     host : 'localhost',
+//     ssl  : {
+//       ca : fs.readFileSync(__dirname + '/mysql-ca.crt')
+//     }
+//   });
 
 //addition from sess-auth
 app.use(bodyParser.urlencoded({
@@ -47,6 +58,10 @@ var options = {
     user             : process.env.DATABASE_USER,
     password         : process.env.DATABASE_PASSWORD,
     database         : process.env.DATABASE,
+    ssl  : {
+        ca : fs.readFileSync(path.join(__dirname, "./ca-certificate.crt"))
+        // ca : fs.readFileSync(__dirname + '/ca-certificate.crt')
+      } 
 };
 
 var sessionStore = new MySQLStore(options);
@@ -89,11 +104,11 @@ app.engine('hbs',exphbs({
 
 
 //Define Routes
-app.get("/", (req, res)=>{
-    res.render("admin/index", {layout: 'landingPage'});
-});
-// app.use("/auth", require("./routes/auth"));
-// app.use("/", require("./routes/pages"));
+// app.get("/", (req, res)=>{
+//     res.render("admin/index", {layout: 'landingPage'});
+// });
+app.use("/auth", require("./routes/auth"));
+app.use("/", require("./routes/pages"));
 
 app.listen(PORT, ()=> console.log(`Listening on Port ${PORT}`));
 
