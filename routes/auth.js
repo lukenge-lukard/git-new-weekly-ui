@@ -1,5 +1,5 @@
 const express = require("express");
-const mysql = require("mysql");
+const mysql = require("mysql8");
 const authController = require("../controllers/auth");
 
 const router = express.Router();

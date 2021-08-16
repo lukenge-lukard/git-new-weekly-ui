@@ -1,5 +1,5 @@
 const express = require("express");
-const mysql = require("mysql");
+const mysql = require("mysql8");
 const router = express.Router();
 
 // Connection Pool
