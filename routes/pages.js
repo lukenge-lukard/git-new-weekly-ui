@@ -1,6 +1,8 @@
 const express = require("express");
 const mysql = require("mysql8");
 const router = express.Router();
+const fs = require('fs');
+const path = require("path");
 
 // Connection Pool
 const pool = mysql.createPool({
@@ -16,7 +18,7 @@ const pool = mysql.createPool({
       } 
 });
 
-const fs = require('fs');
+
 
 // let user_email;
 var data = fs.readFileSync('words.json');

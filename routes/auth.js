@@ -1,6 +1,8 @@
 const express = require("express");
 const mysql = require("mysql8");
 const authController = require("../controllers/auth");
+const fs = require('fs');
+const path = require("path");
 
 const router = express.Router();
 
