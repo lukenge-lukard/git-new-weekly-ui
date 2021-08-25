@@ -3,30 +3,13 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const path = require("path");
 const fs = require('fs');
+const conn = require("../db/db.js");
 
 // let user_email;
 var data = fs.readFileSync('words.json');
 var words = JSON.parse(data);
 console.log(words);
 
-
-// Connection Pool
-const pool = mysql.createPool({
-  // connectionLimit  : 10,
-  host             : process.env.DATABASE_HOST,
-  user             : process.env.DATABASE_USER,
-  password         : process.env.DATABASE_PASSWORD,
-  database         : process.env.DATABASE,
-  port             : process.env.DATABASE_PORT,  
-  ssl  : {
-    ca : fs.readFileSync(path.join(__dirname, "../ca-certificate.crt"))
-    // ca : fs.readFileSync(__dirname + '/ca-certificate.crt')    
-  } 
-});
-
-pool.getConnection((err, connection) => {
-  if(err) throw err; //not connected
-});
 
 exports.login = async (req, res) => {
   try {
@@ -38,34 +21,39 @@ exports.login = async (req, res) => {
         layout: 'landingPage',
       });
     }
-    
-    pool.getConnection((err, connection) => {
-      if(err) throw err; //not connected
       
-      connection.query("SELECT * FROM tbl_user WHERE email = ?", [email], async (error, results) => {
-          // Once done, release connection
-          connection.release();
-          
+      conn.query("SELECT * FROM tbl_user WHERE email = ?", [email], async (error, results) => {
+
           if (!results || !(await bcrypt.compare(password, results[0].password)) ) {
               res.status(401).render("admin/login", {
                 message: "Email or Password is Incorrecct",
                 layout: 'landingPage',
               });
-          
-          }else {                 
-              req.session.user = results[0];
-              // req.session.userId = user.id;
-              // return res.redirect('/home');
 
-              if(!req.session.user){
-                  return res.status(401).send("Unauthorized!");
-              } else {
-                  return res.status(200).redirect("/feed");
-              }       
+          } else {
+            const id = results[0].user_id;
+
+            const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+              expiresIn: process.env.JWT_EXPIRES_IN,
+            });
+
+            // console.log("The token is " + token);
+            // console.log(id);
+            // console.log(results[0]);
+
+            const cookieOptions = {
+              expires: new Date(
+                Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+              ),
+              httpOnly: true,
+            };
+
+            res.cookie("jwt", token, cookieOptions);
+            res.status(200).redirect("/feed");
           }
+
       });
-            
-    });
+   
     
   } catch (error) {
     console.log(error);
@@ -92,15 +80,10 @@ exports.register = (req, res) => {
     });
   }
 
-  pool.getConnection((err, connection) => {
-    if(err) throw err; //not connected
-
-    connection.query(
+    conn.query(
       "SELECT email FROM tbl_user WHERE email = ?",
       [email],
       async (error, results) => {
-        // Once done, release connection
-        connection.release();
 
         if (error) {
           console.log(error);
@@ -120,15 +103,10 @@ exports.register = (req, res) => {
         let hashedPassword = await bcrypt.hash(password, 8);
         console.log(hashedPassword);
 
-        pool.getConnection((err, connection) => {
-          if(err) throw err; //not connected
-
-          connection.query(
+          conn.query(
             "INSERT INTO tbl_user SET ?",
             { surname: surname, firstname: firstname, email: email, password: hashedPassword },
             (error, results) => {
-              // Once done, release connection
-              connection.release();
 
               if (error) {
                 console.log(error);
@@ -141,10 +119,10 @@ exports.register = (req, res) => {
               }
             }
           );
-        });  
+
       }
     );
-  });
+
 };
 
 exports.upload =  (req, res) => {
@@ -165,22 +143,36 @@ exports.upload =  (req, res) => {
       // use mv() to place file on the server
       sampleFile.mv(uploadPath, function(err){
           if(err) return res.status(500).send(err);
-    
-          pool.getConnection((err, connection) => {
-              if(err) throw err; //not connected
-              
-              connection.query('UPDATE tbl_user SET profile_photo = ? WHERE user_id = ?', [imageV2,req.session.user.user_id], (err, rows) => {
-                  // Once done, release connection
-                  connection.release();
-                  
-                  if(!err){
-                      req.session.msg = "Profile Photo Updated";
-                      return res.redirect('/account');                      
-                  } else{
-                      console.log(err);
-                  }
-              });
-          });
+
+              const token = req.cookies.jwt;
+              if (token) {
+                  jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+                      if (err) {
+                          console.log(err);
+                      } else {           
+                          // conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                          //     if(!err){
+                          //         return res.render("maintabs/dashboard", {layout: 'tabs', rows});
+                          //     } else{
+                          //         console.log(err);
+                          //     }
+                          // });            
+                          conn.query('UPDATE tbl_user SET profile_photo = ? WHERE user_id = ?', [imageV2, decodedToken.id], (err, rows) => {
+                                            
+                              if(!err){
+                                  req.session.msg = "Profile Photo Updated";
+                                  return res.redirect('/account');                      
+                              } else{
+                                  console.log(err);
+                              }
+                          });
+                      }
+                  });
+              } else {
+                  console.log("No token present");
+              } 
+
+
       });
       
     
@@ -192,469 +184,529 @@ exports.upload =  (req, res) => {
 
 exports.update = (req, res) => {
   try {
-
-    const { sex, date, phoneNumber } = req.body;
-    
-    if (!sex && !date && !phoneNumber) {      
-      console.log("No field filled");
-
-      pool.getConnection((err, connection) => {
-          if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-              connection.release();                      
-              if(!err){
-                  req.session.msg = "No field filled";
-                  return res.redirect('/account'); 
-              } else{
-                console.log(err);
+    const token = req.cookies.jwt;
+      if (token) {
+          jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+              if (err) {
+                  console.log(err);
+              } else { 
+                  
+                  try {
+                
+                    const { sex, date, phoneNumber } = req.body;
+                    
+                    
+                    if (!sex && !date && !phoneNumber) {      
+                      console.log("No field filled");
+                
+                          conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                               
+                              if(!err){
+                                  req.session.msg = "No field filled";
+                                  return res.redirect('/account'); 
+                              } else{
+                                console.log(err);
+                              }
+                          });
+                
+                    }
+                
+                    else if (sex && !date && !phoneNumber) {
+                
+                      console.log("Input Only: Sex");
+                  
+                        conn.query(
+                          "UPDATE tbl_user SET ? WHERE user_id = ?",
+                          [{ sex: sex }, decodedToken.id],
+                          (error, results) => {
+                            
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              // pool.getconn((err, conn) => {
+                              //     if(err) throw err; //not connected                  
+                                  conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                
+                                      if(!err){
+                                          req.session.msg = "Sex Updated";
+                                          return res.status(200).redirect('/account'); 
+                                      } else{
+                                        console.log(err);
+                                      }
+                                  });
+                              // });
+                            }
+                          }
+                        );
+                
+                      // });
+                  
+                    }
+                
+                    else if (!sex && date && !phoneNumber) {
+                
+                      console.log("Input Only: Date");
+                      // pool.getconn((err, conn) => {
+                      //   if(err) throw err; //not connected
+                  
+                        conn.query(
+                          "UPDATE tbl_user SET ? WHERE user_id = ?",
+                          [{ date_of_birth: date }, decodedToken.id],
+                          (error, results) => {
+                
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              // pool.getconn((err, conn) => {
+                              //     if(err) throw err; //not connected                  
+                                  conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                     
+                                      if(!err){
+                                          req.session.msg = "Date Updated";
+                                          return res.status(200).redirect('/account');
+                                      } else{
+                                        console.log(err);
+                                      }
+                                  });
+                
+                              // });
+                            }
+                          }
+                        );
+                
+                      // });
+                    }
+                
+                    else if (!sex && !date && phoneNumber) {
+                
+                      console.log("Input Only: Phonenumber");
+                      // pool.getconn((err, conn) => {
+                      //   if(err) throw err; //not connected
+                  
+                        conn.query(
+                          "UPDATE tbl_user SET ? WHERE user_id = ?",
+                          [{ phone_number: phoneNumber }, decodedToken.id],
+                          (error, results) => {
+                
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              // pool.getconn((err, conn) => {
+                              //     if(err) throw err; //not connected                  
+                                  conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                          
+                                      if(!err){
+                                          req.session.msg = "Phone Number Updated";
+                                          return res.status(200).redirect('/account');
+                                      } else{
+                                        console.log(err);
+                                      }
+                                  });
+                
+                              // });
+                            }
+                          }
+                        );
+                
+                      // });
+                    }      
+                    
+                    else if (!sex || !date || !phoneNumber) {      
+                      console.log("Some field left out");
+                
+                      // pool.getconn((err, conn) => {
+                      //     if(err) throw err; //not connected                  
+                          conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                        
+                              if(!err){
+                                  req.session.msg = "Fill ALL fields or only ONE in a section and submit";
+                                  return res.status(200).redirect('/account');
+                              } else{
+                                console.log(err);
+                              }
+                          });
+                
+                      // });
+                    } 
+                
+                    else {
+                
+                      console.log("Input Only: All fields entered!");
+                      // pool.getconn((err, conn) => {
+                      //   if(err) throw err; //not connected
+                  
+                        conn.query(
+                          "UPDATE tbl_user SET ? WHERE user_id = ?",
+                          [{ sex: sex, date_of_birth: date, phone_number: phoneNumber }, decodedToken.id],
+                          (error, results) => {
+                
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              // pool.getconn((err, conn) => {
+                              //     if(err) throw err; //not connected                  
+                                  conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                       
+                                      if(!err){
+                                          req.session.msg = "Profile Updated";
+                                          return res.status(200).redirect('/account');
+                                      } else{
+                                        console.log(err);
+                                      }
+                                  });
+                              // });
+                            }
+                          }
+                        );
+                
+                      // });
+                    } 
+                    
+                  } catch (error) {
+                    console.log(error);
+                  }
+                  
               }
           });
-      });
-    }
-
-    else if (sex && !date && !phoneNumber) {
-
-      console.log("Input Only: Sex");
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-  
-        connection.query(
-          "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ sex: sex }, req.session.user.user_id],
-          (error, results) => {
-            connection.release();
-            
-            if (error) {
-              console.log(error);
-            } else {
-              pool.getConnection((err, connection) => {
-                  if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                      connection.release();                      
-                      if(!err){
-                          req.session.msg = "Sex Updated";
-                          return res.status(200).redirect('/account'); 
-                      } else{
-                        console.log(err);
-                      }
-                  });
-              });
-            }
-          }
-        );
-      });
-  
-    }
-
-    else if (!sex && date && !phoneNumber) {
-
-      console.log("Input Only: Date");
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-  
-        connection.query(
-          "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ date_of_birth: date }, req.session.user.user_id],
-          (error, results) => {
-            connection.release();
-
-            if (error) {
-              console.log(error);
-            } else {
-              pool.getConnection((err, connection) => {
-                  if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                      connection.release();                      
-                      if(!err){
-                          req.session.msg = "Date Updated";
-                          return res.status(200).redirect('/account');
-                      } else{
-                        console.log(err);
-                      }
-                  });
-              });
-            }
-          }
-        );
-      });
-    }
-
-    else if (!sex && !date && phoneNumber) {
-
-      console.log("Input Only: Phonenumber");
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-  
-        connection.query(
-          "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ phone_number: phoneNumber }, req.session.user.user_id],
-          (error, results) => {
-            connection.release();
-
-            if (error) {
-              console.log(error);
-            } else {
-              pool.getConnection((err, connection) => {
-                  if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                      connection.release();                      
-                      if(!err){
-                          req.session.msg = "Phone Number Updated";
-                          return res.status(200).redirect('/account');
-                      } else{
-                        console.log(err);
-                      }
-                  });
-              });
-            }
-          }
-        );
-      });
-    }      
-    
-    else if (!sex || !date || !phoneNumber) {      
-      console.log("Some field left out");
-
-      pool.getConnection((err, connection) => {
-          if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-              connection.release();                      
-              if(!err){
-                  req.session.msg = "Fill ALL fields or only ONE in a section and submit";
-                  return res.status(200).redirect('/account');
-              } else{
-                console.log(err);
-              }
-          });
-      });
-    } 
-
-    else {
-
-      console.log("Input Only: All fields entered!");
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-  
-        connection.query(
-          "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ sex: sex, date_of_birth: date, phone_number: phoneNumber }, req.session.user.user_id],
-          (error, results) => {
-            connection.release();
-
-            if (error) {
-              console.log(error);
-            } else {
-              pool.getConnection((err, connection) => {
-                  if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                      connection.release();                      
-                      if(!err){
-                          req.session.msg = "Profile Updated";
-                          return res.status(200).redirect('/account');
-                      } else{
-                        console.log(err);
-                      }
-                  });
-              });
-            }
-          }
-        );
-      });
-    } 
+      } else {
+          console.log("No token present");
+      } 
     
   } catch (error) {
     console.log(error);
   }
+
 };
+
+//not yet cleaned....
 
 exports.editName = (req, res) => {
   try {
+    const token = req.cookies.jwt;
+      if (token) {
+          jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+              if (err) {
+                  console.log(err);
+              } else {           
+                  // conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                  //     if(!err){
+                  //         return res.render("maintabs/dashboard", {layout: 'tabs', rows});
+                  //     } else{
+                  //         console.log(err);
+                  //     }
+                  // }); 
+                  
+                  try {
+                
+                    const { surname, firstname, username } = req.body;
+                    
+                    if (!surname && !firstname && !username) {      
+                      console.log("No fields filled");
 
-    const { surname, firstname, username } = req.body;
-    
-    if (!surname && !firstname && !username) {      
-      console.log("No fields filled");
+                          conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                              
+                              if(!err){
+                                  req.session.msg = "No field filled";
+                                  return res.status(400).redirect('/account');
+                              } else{
+                                console.log(err);
+                              }
+                          });
+                    }
+                
+                    else if (surname && !firstname && !username) {
+                
+                      console.log("Input Only: surname");
+                  
+                        conn.query(
+                          "UPDATE tbl_user SET ? WHERE user_id = ?",
+                          [{ surname: surname }, decodedToken.id],
+                          (error, results) => {
+                            
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              // pool.getconn((err, conn) => {
+                              //     if(err) throw err; //not connected                  
+                                  conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                       
+                                      if(!err){
+                                          req.session.msg = "Surname Updated";
+                                          return res.status(200).redirect('/account');
+                                      } else{
+                                        console.log(err);
+                                      }
+                                  });
+                              // });
+                            }
+                          }
+                        );
+                  
+                    }
+                
+                    else if (!surname && firstname && !username) {
+                
+                      console.log("Input Only: firstname");
+                      // pool.getconn((err, conn) => {
+                      //   if(err) throw err; //not connected
+                  
+                        conn.query(
+                          "UPDATE tbl_user SET ? WHERE user_id = ?",
+                          [{ firstname: firstname }, decodedToken.id],
+                          (error, results) => {
+                
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              // pool.getconn((err, conn) => {
+                              //     if(err) throw err; //not connected                  
+                                  conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                        
+                                      if(!err){
+                                          req.session.msg = "First Name Updated";
+                                          return res.status(200).redirect('/account');
+                                      } else{
+                                        console.log(err);
+                                      }
+                                  });
+                              // });
+                            }
+                          }
+                        );
+                      // });
+                    }
+                
+                    else if (!surname && !firstname && username) {
+                
+                      console.log("Input Only: username");
+                      // pool.getconn((err, conn) => {
+                      //   if(err) throw err; //not connected
+                  
+                        conn.query(
+                          "UPDATE tbl_user SET ? WHERE user_id = ?",
+                          [{ username: username }, decodedToken.id],
+                          (error, results) => {
+                
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              // pool.getconn((err, conn) => {
+                              //     if(err) throw err; //not connected                  
+                                  conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                       
+                                      if(!err){
+                                          req.session.msg = "Username Updated";
+                                          return res.status(200).redirect('/account');
+                                      } else{
+                                        console.log(err);
+                                      }
+                                  });
+                              // });
+                            }
+                          }
+                        );
+                      // });
+                    }      
+                    
+                    else if (!surname || !firstname || !username) {      
+                      console.log("Some field left out");
+                
+                      // pool.getconn((err, conn) => {
+                      //     if(err) throw err; //not connected                  
+                          conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                             
+                              if(!err){
+                                  req.session.msg = "Fill ALL fields or only ONE in a section and submit";
+                                  return res.status(400).redirect('/account');
+                              } else{
+                                console.log(err);
+                              }
+                          });
+                      // });
+                    } 
+                
+                    else {
+                
+                      console.log("Input Only: All fields entered!");
+                      // pool.getconn((err, conn) => {
+                      //   if(err) throw err; //not connected
+                  
+                        conn.query(
+                          "UPDATE tbl_user SET ? WHERE user_id = ?",
+                          [{ surname: surname, firstname: firstname, username: username }, decodedToken.id],
+                          (error, results) => {
+                
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              pool.getconn((err, conn) => {
+                                  if(err) throw err; //not connected                  
+                                  conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                      conn.release();                      
+                                      if(!err){
+                                          req.session.msg = "Profile Updated";
+                                          return res.status(200).redirect('/account');
+                                      } else{
+                                        console.log(err);
+                                      }
+                                  });
+                              });
+                            }
+                          }
+                        );
+                      // });
+                    } 
+                    
+                  } catch (error) {
+                    console.log(error);
+                  }
+                  
 
-      pool.getConnection((err, connection) => {
-          if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-              connection.release();                      
-              if(!err){
-                  req.session.msg = "No field filled";
-                  return res.status(400).redirect('/account');
-              } else{
-                console.log(err);
               }
           });
-      });
-    }
-
-    else if (surname && !firstname && !username) {
-
-      console.log("Input Only: surname");
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-  
-        connection.query(
-          "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ surname: surname }, req.session.user.user_id],
-          (error, results) => {
-            connection.release();
-            
-            if (error) {
-              console.log(error);
-            } else {
-              pool.getConnection((err, connection) => {
-                  if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                      connection.release();                      
-                      if(!err){
-                          req.session.msg = "Surname Updated";
-                          return res.status(200).redirect('/account');
-                      } else{
-                        console.log(err);
-                      }
-                  });
-              });
-            }
-          }
-        );
-      });
-  
-    }
-
-    else if (!surname && firstname && !username) {
-
-      console.log("Input Only: firstname");
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-  
-        connection.query(
-          "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ firstname: firstname }, req.session.user.user_id],
-          (error, results) => {
-            connection.release();
-
-            if (error) {
-              console.log(error);
-            } else {
-              pool.getConnection((err, connection) => {
-                  if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                      connection.release();                      
-                      if(!err){
-                          req.session.msg = "First Name Updated";
-                          return res.status(200).redirect('/account');
-                      } else{
-                        console.log(err);
-                      }
-                  });
-              });
-            }
-          }
-        );
-      });
-    }
-
-    else if (!surname && !firstname && username) {
-
-      console.log("Input Only: username");
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-  
-        connection.query(
-          "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ username: username }, req.session.user.user_id],
-          (error, results) => {
-            connection.release();
-
-            if (error) {
-              console.log(error);
-            } else {
-              pool.getConnection((err, connection) => {
-                  if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                      connection.release();                      
-                      if(!err){
-                          req.session.msg = "Username Updated";
-                          return res.status(200).redirect('/account');
-                      } else{
-                        console.log(err);
-                      }
-                  });
-              });
-            }
-          }
-        );
-      });
-    }      
-    
-    else if (!surname || !firstname || !username) {      
-      console.log("Some field left out");
-
-      pool.getConnection((err, connection) => {
-          if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-              connection.release();                      
-              if(!err){
-                  req.session.msg = "Fill ALL fields or only ONE in a section and submit";
-                  return res.status(400).redirect('/account');
-              } else{
-                console.log(err);
-              }
-          });
-      });
-    } 
-
-    else {
-
-      console.log("Input Only: All fields entered!");
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-  
-        connection.query(
-          "UPDATE tbl_user SET ? WHERE user_id = ?",
-          [{ surname: surname, firstname: firstname, username: username }, req.session.user.user_id],
-          (error, results) => {
-            connection.release();
-
-            if (error) {
-              console.log(error);
-            } else {
-              pool.getConnection((err, connection) => {
-                  if(err) throw err; //not connected                  
-                  connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                      connection.release();                      
-                      if(!err){
-                          req.session.msg = "Profile Updated";
-                          return res.status(200).redirect('/account');
-                      } else{
-                        console.log(err);
-                      }
-                  });
-              });
-            }
-          }
-        );
-      });
-    } 
+      } else {
+          console.log("No token present");
+      }   
     
   } catch (error) {
     console.log(error);
   }
+
 };
 
 exports.editPassword = (req, res) => {
   try {
-
-    const { currentPassword, newPassword, confirmPassword } = req.body
-    
-    if (!currentPassword || !newPassword || !confirmPassword) {
-
-      pool.getConnection((err, connection) => {
-          if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-              connection.release();                      
-              if(!err){
-                  req.session.msg = "Please fill all the password fields.";
-                  return res.status(400).redirect('/account');
-              } else{
-                console.log(err);
-              }
-          });
-      });
-
-
-
-      
-    } 
-
-    else if (newPassword !== confirmPassword) {
-
-      pool.getConnection((err, connection) => {
-          if(err) throw err; //not connected                  
-          connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-              connection.release();                      
-              if(!err){
-                  req.session.msg = "New Passwords do not match";
-                  return res.status(401).redirect('/account');
-              } else{
-                console.log(err);
-              }
-          });
-      });
-    }
-    
-    else {
-
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-        
-        connection.query(
-          "SELECT * FROM tbl_user WHERE user_id = ?",
-          [req.session.user.user_id],
-          async (error, results) => {
-            // Once done, release connection
-            connection.release();
-            
-            if (
-              !results ||
-              !(await bcrypt.compare(currentPassword, results[0].password))
-              ) {
-  
-                pool.getConnection((err, connection) => {
-                    if(err) throw err; //not connected                  
-                    connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                        connection.release();                      
-                        if(!err){
-                            req.session.msg = "Password is Incorrect";
-                            return res.status(401).redirect('/account');
-                        } else{
-                          console.log(err);
-                        }
-                    });
-                });
-  
-  
-              } else {
-  
-                  let hashedPassword = await bcrypt.hash(newPassword, 8);
-                  console.log(hashedPassword);
-          
-                  pool.getConnection((err, connection) => {
-                    if(err) throw err; //not connected
-              
-                    connection.query(
-                      "UPDATE tbl_user SET ? WHERE user_id = ?",
-                      [{ password: hashedPassword }, req.session.user.user_id],
-                      (error, results) => {
-                        connection.release();
-                        
-                        if (error) {
-                          console.log(error);
-                        } else {
-                          pool.getConnection((err, connection) => {
-                              if(err) throw err; //not connected                  
-                              connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-                                  connection.release();                      
-                                  if(!err){
-                                      req.session.msg = "Password Changed";
-                                      return res.status(200).redirect('/account');
-                                  } else{
-                                    console.log(err);
-                                  }
-                              });
+    const token = req.cookies.jwt;
+      if (token) {
+          jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+              if (err) {
+                  console.log(err);
+              } else {           
+                  // conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                  //     if(!err){
+                  //         return res.render("maintabs/dashboard", {layout: 'tabs', rows});
+                  //     } else{
+                  //         console.log(err);
+                  //     }
+                  // });
+                  
+                  try {
+                
+                    const { currentPassword, newPassword, confirmPassword } = req.body
+                    
+                    if (!currentPassword || !newPassword || !confirmPassword) {
+                
+                      // pool.getconn((err, conn) => {
+                      //     if(err) throw err; //not connected                  
+                          conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                
+                              if(!err){
+                                  req.session.msg = "Please fill all the password fields.";
+                                  return res.status(400).redirect('/account');
+                              } else{
+                                console.log(err);
+                              }
                           });
-                        }
-                      }
-                    );
-                  });        
-                }
-        });
-              
-      });
-    }
-     
+                      // });
+                
+                
+                
+                      
+                    } 
+                
+                    else if (newPassword !== confirmPassword) {
+                
+                      // pool.getconn((err, conn) => {
+                      //     if(err) throw err; //not connected                  
+                          conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                            
+                              if(!err){
+                                  req.session.msg = "New Passwords do not match";
+                                  return res.status(401).redirect('/account');
+                              } else{
+                                console.log(err);
+                              }
+                          });
+                      // });
+                    }
+                    
+                    else {
+                
+                      // pool.getconn((err, conn) => {
+                      //   if(err) throw err; //not connected
+                        
+                        conn.query(
+                          "SELECT * FROM tbl_user WHERE user_id = ?",
+                          [decodedToken.id],
+                          async (error, results) => {
+                            
+                            if (
+                              !results ||
+                              !(await bcrypt.compare(currentPassword, results[0].password))
+                              ) {
+                  
+                                // pool.getconn((err, conn) => {
+                                //     if(err) throw err; //not connected                  
+                                    conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                        
+                                        if(!err){
+                                            req.session.msg = "Password is Incorrect";
+                                            return res.status(401).redirect('/account');
+                                        } else{
+                                          console.log(err);
+                                        }
+                                    });
+                                // });
+                  
+                  
+                              } else {
+                  
+                                  let hashedPassword = await bcrypt.hash(newPassword, 8);
+                                  console.log(hashedPassword);
+                          
+                                  // pool.getconn((err, conn) => {
+                                  //   if(err) throw err; //not connected
+                              
+                                    conn.query(
+                                      "UPDATE tbl_user SET ? WHERE user_id = ?",
+                                      [{ password: hashedPassword }, decodedToken.id],
+                                      (error, results) => {
+                                        
+                                        if (error) {
+                                          console.log(error);
+                                        } else {
+                                          pool.getconn((err, conn) => {
+                                              if(err) throw err; //not connected                  
+                                              conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                                                  conn.release();                      
+                                                  if(!err){
+                                                      req.session.msg = "Password Changed";
+                                                      return res.status(200).redirect('/account');
+                                                  } else{
+                                                    console.log(err);
+                                                  }
+                                              });
+                                          });
+                                        }
+                                      }
+                                    );
+                                  // });        
+                                }
+                        });
+                              
+                      // });
+                    }
+                     
+                  } catch (error) {
+                    console.log(error);
+                  }
+                  
+              }
+          });
+      } else {
+          console.log("No token present");
+      }   
+    
   } catch (error) {
     console.log(error);
   }
@@ -662,76 +714,109 @@ exports.editPassword = (req, res) => {
 
 exports.logout = (req, res) => {
   console.log("button pressed!");
-  req.session.destroy(err => {
-      if(err) {
-          return res.send('/home');
-          // return res.redirect('/home');
-      }
 
-      res.clearCookie(SESS_NAME);
-      res.redirect('/login');
-  });
+  const token = req.cookies.jwt;
+  if (token) {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+          if (err) {
+              console.log(err);
+          } else { 
+
+              res.clearCookie("jwt");
+              return res.redirect('/login');              
+              
+          }
+      });
+  } else {
+      console.log("No token present");
+  }   
+
+
+
 };
 
 exports.create = (req, res) => {
   try {
-
-    const { date, title, paragraph } = req.body;
-
-    if ( date && title && paragraph  ) {
-
-      console.log("Input Only: Date");
-   
-      pool.getConnection((err, connection) => {
-        if(err) throw err; //not connected
-
-        connection.query(
-          "INSERT INTO tbl_post SET ?",
-          { post_title: title, post_date: date},
-          (postError, postResults) => {
-            // Once done, release connection
-            connection.release();
-
-            if (postError) {
-              console.log(postError);
-            } else {
-
-              pool.query("INSERT INTO tbl_user_vs_post SET ?", { user_id: req.session.user.user_id, post_id: postResults.insertId}, (error, results) => {
-                if(error){console.log(error);} else{
-                  console.log("tbl_user_vs_post reached too!");
-
-                  pool.query(
-                    "INSERT INTO tbl_post_paragraphs SET ?",
-                  { paragraph: paragraph,  post_id: postResults.insertId},
-                  (paraError, paragraphResult) => {
-                    if(paraError){
-                      console.log(paraError);
-                    }else {
-                      console.log("Paragraph created too");
-                      console.log(req.session.user.user_id);
-                      console.log(paragraphResult);
-                      console.log("Post  ID can still be accessed: ");
-                      console.log(postResults.insertId);
-    
-    
-                      req.session.msg = "New Post Created";
-                      return res.redirect("/create");
-                      
+    const token = req.cookies.jwt;
+      if (token) {
+          jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+              if (err) {
+                  console.log(err);
+              } else {           
+                  // conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                  //     if(!err){
+                  //         return res.render("maintabs/dashboard", {layout: 'tabs', rows});
+                  //     } else{
+                  //         console.log(err);
+                  //     }
+                  // });  
+                  
+                  try {
+                
+                    const { date, title, paragraph } = req.body;
+                
+                    if ( date && title && paragraph  ) {
+                
+                      console.log("Input Only: Date");
+                   
+                      // pool.getconn((err, conn) => {
+                      //   if(err) throw err; //not connected
+                
+                        conn.query(
+                          "INSERT INTO tbl_post SET ?",
+                          { post_title: title, post_date: date},
+                          (postError, postResults) => {
+                
+                            if (postError) {
+                              console.log(postError);
+                            } else {
+                
+                              conn.query("INSERT INTO tbl_user_vs_post SET ?", { user_id: decodedToken.id, post_id: postResults.insertId}, (error, results) => {
+                                if(error){console.log(error);} else{
+                                  console.log("tbl_user_vs_post reached too!");
+                
+                                  conn.query(
+                                    "INSERT INTO tbl_post_paragraphs SET ?",
+                                  { paragraph: paragraph,  post_id: postResults.insertId},
+                                  (paraError, paragraphResult) => {
+                                    if(paraError){
+                                      console.log(paraError);
+                                    }else {
+                                      console.log("Paragraph created too");
+                                      console.log(decodedToken.id);
+                                      console.log(paragraphResult);
+                                      console.log("Post  ID can still be accessed: ");
+                                      console.log(postResults.insertId);
+                    
+                    
+                                      req.session.msg = "New Post Created";
+                                      return res.redirect("/create");
+                                      
+                                    }
+                                  });
+                
+                                }
+                              });
+                
+                
+                            }
+                          }
+                        );
+                      // }); 
+                
                     }
-                  });
-
-                }
-              });
-
-
-            }
-          }
-        );
-      }); 
-
-    }
-    
-    
+                    
+                    
+                    
+                  } catch (error) {
+                    console.log(error);
+                  }
+                  
+              }
+          });
+      } else {
+          console.log("No token present");
+      }   
     
   } catch (error) {
     console.log(error);

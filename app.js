@@ -8,13 +8,15 @@ const bodyParser = require('body-parser');
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 const fs = require('fs');
+const conn = require("./db/db.js");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 const TWO_HOURS = 1000 * 60 * 60 * 24;
 
 const {
-    PORT = 3200,
+    PORT = 3201,
     NODE_ENV = 'development',
 
     SESS_NAME = 'sid',
@@ -24,53 +26,16 @@ const {
 
 const IN_PROD = NODE_ENV === 'production';
 
-
-// const PORT = process.env.PORT || 3200;
 dotenv.config({ path: "./.env" });
 
-// Connection Pool
-const pool = mysql.createPool({
-    // connectionLimit  : 10,
-    host             : process.env.DATABASE_HOST,
-    user             : process.env.DATABASE_USER,
-    password         : process.env.DATABASE_PASSWORD,
-    database         : process.env.DATABASE,
-    port             : process.env.DATABASE_PORT,
-    ssl  : {
-        ca : fs.readFileSync(__dirname + '/ca-certificate.crt')
-      }    
-});
-
-// var connection = mysql.createConnection({
-//     host : 'localhost',
-//     ssl  : {
-//       ca : fs.readFileSync(__dirname + '/mysql-ca.crt')
-//     }
-//   });
-
-//addition from sess-auth
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-
-var options = {
-    host             : process.env.DATABASE_HOST,
-    user             : process.env.DATABASE_USER,
-    password         : process.env.DATABASE_PASSWORD,
-    database         : process.env.DATABASE,
-    ssl  : {
-        ca : fs.readFileSync(path.join(__dirname, "./ca-certificate.crt"))
-        // ca : fs.readFileSync(__dirname + '/ca-certificate.crt')
-      } 
-};
-
-var sessionStore = new MySQLStore(options);
 
 app.use(session({
     name: SESS_NAME,
     resave: false,
     saveUninitialized: false,
-    store: sessionStore,
     secret: SESS_SECRET,
     cookie: {
         maxAge: SESS_LIFETIME,
@@ -79,9 +44,9 @@ app.use(session({
     }
 }));
 
-
 //default option
 app.use(fileUpload());
+app.use(cookieParser());
 
 // Static Files
 const publicDirectory = path.join(__dirname, "./public");
@@ -107,8 +72,15 @@ app.engine('hbs',exphbs({
 // app.get("/", (req, res)=>{
 //     res.render("admin/index", {layout: 'landingPage'});
 // });
+// app.get("/login",  (req, res)=>{
+//     res.render("admin/login", {layout: 'landingPage'});
+// });
+// app.get("/register",  (req, res)=>{
+//     res.render("admin/register", {layout: 'landingPage'});
+// });
 app.use("/auth", require("./routes/auth"));
 app.use("/", require("./routes/pages"));
+
 
 app.listen(PORT, ()=> console.log(`Listening on Port ${PORT}`));
 

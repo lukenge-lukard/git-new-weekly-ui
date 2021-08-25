@@ -2,98 +2,18 @@ const express = require("express");
 const mysql = require("mysql8");
 const router = express.Router();
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 const path = require("path");
-
-// Connection Pool
-const pool = mysql.createPool({
-    // connectionLimit  : 10,
-    host             : process.env.DATABASE_HOST,
-    user             : process.env.DATABASE_USER,
-    password         : process.env.DATABASE_PASSWORD,
-    database         : process.env.DATABASE,
-    port             : process.env.DATABASE_PORT,  
-    ssl  : {
-        ca : fs.readFileSync(path.join(__dirname, "../ca-certificate.crt"))
-        // ca : fs.readFileSync(__dirname + '/ca-certificate.crt')
-      } 
-});
-
+const conn = require("../db/db.js");
+const { requireAuth, checkUser,  } = require("../middleware/authMiddleware.js");
 
 
 // let user_email;
 var data = fs.readFileSync('words.json');
 var words = JSON.parse(data);
 
-//middleware
-const redirectLogin = (req, res, next) => {
-    pool.query("SELECT * FROM sessions", (err, rows) => {
-        if(!err){
-            // console.log(rows);
-            if(rows[0] == null){
-                console.log("No sessions present!")
-                console.log(rows);
-                return res.render("admin/login", {
-                    layout: 'landingPage',
-                    message: "Session timeout! Please Login Again."
-                });
-            } 
-            else if(!req.session.user.user_id){
-                return res.redirect('login');
-            } else {
-                return next();
-            }
-        } else{
-            console.log("Error captured....");
-            console.log(err);
-        }
-    });
-}
-
-//middleware
-const redirectHome = (req, res, next) => {
-    pool.query("SELECT * FROM sessions", (err, rows) => {
-        if(!err){
-            if(rows[0] == null){
-                console.log("No sessions present!")
-                // console.log(rows);
-                return res.render("admin/login", {layout: 'landingPage'});
-            } 
-            else if(req.session.user.user_id){
-                return res.redirect('feed');
-            } else {
-                return next();
-            }
-        } else{
-            console.log("Error captured....");
-            console.log(err);
-        }
-    });
-}
-
-//middleware
-const redirectRegisterHome = (req, res, next) => {
-    pool.query("SELECT * FROM sessions", (err, rows) => {
-        if(!err){
-            if(rows[0] == null){
-                console.log("No sessions present!")
-                // console.log(rows);
-                return res.render("admin/register", {layout: 'landingPage'});
-            } 
-            else if(req.session.user.user_id){
-                return res.redirect('feed');
-            } else {
-                return next();
-            }
-        } else{
-            console.log("Error captured....");
-            console.log(err);
-        }
-    });
-}
-
-
-
 // admin routes
+// router.get("*", checkUser);
 router.get("/", (req, res)=>{
     res.render("admin/index", {layout: 'landingPage'});
 });
@@ -105,141 +25,249 @@ router.get("/register",  (req, res)=>{
 });
 
 // Side bar link routers
-router.get("/account", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            var msg = req.session.msg;
-            req.session.msg = null; 
-            res.render("maintabs/user-account", {
-                layout: 'accounts',
-                message: msg ? msg : null,
-                rows
-            });
-        } else{
-            console.log(err);
-        }
-    });
+router.get("/account", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        var msg = req.session.msg;
+                        req.session.msg = null; 
+                        res.render("maintabs/user-account", {
+                            layout: 'accounts',
+                            message: msg ? msg : null,
+                            rows
+                        });
+                    } else{
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    } else {
+        console.log("No token present");
+    }
+    
+
 });
 
-router.get("/feed", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            res.render("maintabs/dashboard", {layout: 'tabs', rows});
-        } else{
-            console.log(err);
-        }
-    });
+router.get("/feed", requireAuth,  (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {           
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        return res.render("maintabs/dashboard", {layout: 'tabs', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });            
+            }
+        });
+    } else {
+        console.log("No token present");
+    }   
 });
 
-router.get("/create", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            pool.query("SELECT po.post_title, po.post_date, pa.paragraph, u.surname, u.firstname, u.profile_photo FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_user u ON uvp.user_id = u.user_id ORDER BY po.post_id DESC", (err, results) => {
-                if(!err){
-                    console.log(results);
-                    function nl2br(str){
-                        return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n\n');
+router.get("/create", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {          
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        conn.query("SELECT po.post_title, po.post_date, pa.paragraph, u.surname, u.firstname, u.profile_photo FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_user u ON uvp.user_id = u.user_id ORDER BY po.post_id DESC", (err, results) => {
+                            if(!err){
+                                console.log(results);
+                                function nl2br(str){
+                                    return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n\n');
+                                }
+            
+                                for(let i = 0; i < results.length; i++){
+                                    results[i].paragraph = nl2br(results[i].paragraph);
+                                }
+            
+                                var msg = req.session.msg;
+                                req.session.msg = null; 
+                                return res.render("maintabs/create", {
+                                    layout: 'create',
+                                    message: msg ? msg : null,
+                                    rows,
+                                    results
+                                });
+                            } else {
+                                console.log(err);
+                            }
+            
+                        });
+                    } else{
+                        console.log(err);
                     }
-
-                    for(let i = 0; i < results.length; i++){
-                        results[i].paragraph = nl2br(results[i].paragraph);
-                    }
-
-                    var msg = req.session.msg;
-                    req.session.msg = null; 
-                    return res.render("maintabs/create", {
-                        layout: 'create',
-                        message: msg ? msg : null,
-                        rows,
-                        results
-                    });
-                } else {
-                    console.log(err);
-                }
-
-            });
-        } else{
-            console.log(err);
-        }
-    });
+                });
+            }
+        });
+    } else {
+        console.log("No token present");
+    } 
 });
 
 router.get("/page-under-devt", (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            res.render("admin/page-under-devt", {layout: 'page-devt', rows});
-        } else{
-            console.log(err);
-        }
-    });
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        res.render("admin/page-under-devt", {layout: 'page-devt', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    } else {
+        console.log("No token present");
+    } 
 });
 
 //Main Tabs Scrollable on top
-router.get("/campus-101", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            return res.render("maintabs/campus-101", {layout: 'tabs', rows});
-        } else{
-            console.log(err);
-        }
-    });    
+router.get("/campus-101", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        return res.render("maintabs/campus-101", {layout: 'tabs', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });    
+            }
+        });
+    } else {
+        console.log("No token present");
+    }
 });
 
-router.get("/interview", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            return res.render("maintabs/interview", {layout: 'tabs', rows});
-        } else{
-            console.log(err);
-        }
-    });    
+router.get("/interview", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        return res.render("maintabs/interview", {layout: 'tabs', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });    
+            }
+        });
+    } else {
+        console.log("No token present");
+    }
 });
 
-router.get("/internship", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            return res.render("maintabs/internship", {layout: 'tabs', rows});
-        } else{
-            console.log(err);
-        }
-    });    
+router.get("/internship", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        return res.render("maintabs/internship", {layout: 'tabs', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });    
+            }
+        });
+    } else {
+        console.log("No token present");
+    }
 });
 
-router.get("/noticeboard", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            return res.render("maintabs/noticeboard", {layout: 'tabs', rows});
-        } else{
-            console.log(err);
-        }
-    });    
+router.get("/noticeboard", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        return res.render("maintabs/noticeboard", {layout: 'tabs', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });    
+            }
+        });
+    } else {
+        console.log("No token present");
+    }
 });
 
-router.get("/inspiration", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            return res.render("maintabs/inspiration", {layout: 'tabs', rows});
-        } else{
-            console.log(err);
-        }
-    });    
+router.get("/inspiration", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        return res.render("maintabs/inspiration", {layout: 'tabs', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });    
+            }
+        });
+    } else {
+        console.log("No token present");
+    }
 });
 
-router.get("/uncensored", redirectLogin, (req, res)=>{
-    pool.query("SELECT * FROM tbl_user WHERE user_id = ?",[req.session.user.user_id], (err, rows) => {
-        if(!err){
-            return res.render("maintabs/uncensored", {layout: 'tabs', rows});
-        } else{
-            console.log(err);
-        }
-    });    
+router.get("/uncensored", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        return res.render("maintabs/uncensored", {layout: 'tabs', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });    
+            }
+        });
+    } else {
+        console.log("No token present");
+    }
 });
 
-
-pool.getConnection((err, connection) => {
-    if(err) throw err; //not connected
-    
-    connection.query("SELECT * FROM tbl_user WHERE user_id = ?",[words.userId], (err, rows) => {
+    conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[words.userId], (err, rows) => {
        
         
         if(!err){ 
@@ -324,13 +352,13 @@ pool.getConnection((err, connection) => {
             });
 
             // Once done, release connection
-            connection.release();
+            // connection.release();
 
         } else {
             console.log(err);
         }
 
     });
-});
+
 
 module.exports = router;
