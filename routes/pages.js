@@ -172,7 +172,7 @@ router.get("/feed", requireAuth, (req, res)=>{
                 
                 conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                     if(!err){
-                        conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id WHERE po.post_approval = ? ORDER BY po.post_id DESC", [1], (err, results) => {
+                        conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id  ORDER BY po.post_id DESC",  (err, results) => {
                             if(!err){
                                 function nl2br(str){
                                     return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
@@ -299,7 +299,7 @@ router.get("/campus-101", requireAuth, (req, res)=>{
 
                             if (categoryError) {console.log(categoryError);} else {
 
-                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE po.post_approval = ? AND pvc.post_category_id = ? ORDER BY po.post_id DESC", [ 1, categoryResults[0].post_category_id ], (err, results) => {
+                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE pvc.post_category_id = ? ORDER BY po.post_id DESC", [  categoryResults[0].post_category_id ], (err, results) => {
                                     if(!err){
                                         function nl2br(str){
                                             return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
@@ -360,7 +360,7 @@ router.get("/interview", requireAuth, (req, res)=>{
 
                             if (categoryError) {console.log(categoryError);} else {
 
-                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE po.post_approval = ? AND pvc.post_category_id = ? ORDER BY po.post_id DESC", [ 1, categoryResults[0].post_category_id ], (err, results) => {
+                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE pvc.post_category_id = ? ORDER BY po.post_id DESC", [  categoryResults[0].post_category_id ], (err, results) => {
                                     if(!err){
                                         function nl2br(str){
                                             return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
@@ -421,7 +421,7 @@ router.get("/internship", requireAuth, (req, res)=>{
 
                             if (categoryError) {console.log(categoryError);} else {
 
-                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE po.post_approval = ? AND pvc.post_category_id = ? ORDER BY po.post_id DESC", [ 1, categoryResults[0].post_category_id ], (err, results) => {
+                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE pvc.post_category_id = ? ORDER BY po.post_id DESC", [  categoryResults[0].post_category_id ], (err, results) => {
                                     if(!err){
                                         function nl2br(str){
                                             return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
@@ -482,7 +482,7 @@ router.get("/noticeboard", requireAuth, (req, res)=>{
 
                             if (categoryError) {console.log(categoryError);} else {
 
-                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE po.post_approval = ? AND pvc.post_category_id = ? ORDER BY po.post_id DESC", [ 1, categoryResults[0].post_category_id ], (err, results) => {
+                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE pvc.post_category_id = ? ORDER BY po.post_id DESC", [ categoryResults[0].post_category_id ], (err, results) => {
                                     if(!err){
                                         function nl2br(str){
                                             return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
@@ -543,7 +543,7 @@ router.get("/inspiration", requireAuth, (req, res)=>{
 
                             if (categoryError) {console.log(categoryError);} else {
 
-                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE po.post_approval = ? AND pvc.post_category_id = ? ORDER BY po.post_id DESC", [ 1, categoryResults[0].post_category_id ], (err, results) => {
+                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE pvc.post_category_id = ? ORDER BY po.post_id DESC", [  categoryResults[0].post_category_id ], (err, results) => {
                                     if(!err){
                                         function nl2br(str){
                                             return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
@@ -604,7 +604,7 @@ router.get("/uncensored", requireAuth, (req, res)=>{
 
                             if (categoryError) {console.log(categoryError);} else {
 
-                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE po.post_approval = ? AND pvc.post_category_id = ? ORDER BY po.post_id DESC", [ 1, categoryResults[0].post_category_id ], (err, results) => {
+                                conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id JOIN tbl_post_vs_category pvc ON po.post_id = pvc.post_id WHERE pvc.post_category_id = ? ORDER BY po.post_id DESC", [  categoryResults[0].post_category_id ], (err, results) => {
                                     if(!err){
                                         function nl2br(str){
                                             return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
