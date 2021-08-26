@@ -26,7 +26,8 @@ const {
 
 const IN_PROD = NODE_ENV === 'production';
 
-dotenv.config({ path: "./.env" });
+// dotenv.config({ path: "./.env" });
+dotenv.config({ path: path.join(__dirname, "./.env") });
 
 app.use(bodyParser.urlencoded({
     extended: true
