@@ -38,7 +38,9 @@ router.get("/account", requireAuth, (req, res)=>{
                         function truncateDate(str, n){
                             return (str.length > n) ? str.substr(0, n-1) : str;
                         }
-                        rows[0].date_of_birth = truncateDate(rows[0].date_of_birth.toString(), 17);
+                        if(rows[0].date_of_birth){
+                            rows[0].date_of_birth = truncateDate(rows[0].date_of_birth.toString(), 17);
+                        }
 
                         var msg = req.session.msg;
                         req.session.msg = null; 
