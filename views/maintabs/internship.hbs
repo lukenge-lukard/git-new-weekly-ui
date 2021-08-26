@@ -13,7 +13,59 @@
         </div>
     </div>
 
-    <!--MIDWIFERY INTERNSHIP-->
+       <!-- Stories From Database -->
+{{#if results}}
+
+    {{#each results}}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+                    <div class="card" style="margin-bottom: 10px;">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between">
+                                <div class="text-right text-secondary">
+                                    <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
+                                    <span class="text-muted" style=" font-weight: lighter;">{{this.post_date}}</span>
+                                </div>
+                                <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
+                            </div>
+                        </div>
+                        <div class="row padding card-body align-items-center">
+                            <div class="col-lg-4">
+                                {{#if this.image_file}}
+                                    <img class="img-fluid card-img" src="data:image/*;base64,{{this.image_file}}"  style="">
+                                {{else}}
+                                    <img class="img-fluid card-img" src="images/check3.jpg" alt="image" style="">
+                                {{/if}}
+                            </div>
+                            <div class="col-md-12 col-lg-8">
+                                <h3 class="card-title" style="color: blue;">{{this.post_title}}</h3>
+                                <h6 style="font-weight: bold;" class="d-flex justify-content-between align-items-center">
+                                    <span >
+                                        <i class="fa fa-edit"></i> Story by {{this.surname}}  {{this.firstname}}
+                                    </span>
+                                    {{#if this.profile_photo}}
+                                        <img src="data:image/*;base64,{{this.profile_photo}}"  class="rounded-circle mr-3" style="height: 36px; width: 40px;">
+                                    {{else}}
+                                        <img src="images/avatarT.jpg" class="rounded-circle mr-3" style="height: 36px; width: 40px;">
+                                    {{/if}}
+                                </h6>
+                                <p style="white-space: pre-line;">
+                                    {{this.paragraph}}
+                                    <a href="/story/?id={{this.post_id}}" class="btn btn-outline-primary">see full story</a>
+                                </p>                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {{/each}}
+
+{{else}}
+    
+    <!--Two column section-->
     <div class="container-fluid">
         <div class="row">
             <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
@@ -22,33 +74,35 @@
                         <div class="d-flex justify-content-between">
                             <div class="text-right text-secondary">
                                 <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">< April 18, 2021</span>
+                                <span class="text-muted" style=" font-weight: lighter;">-- --, 2021</span>
                             </div>
                             <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
                         </div>
                     </div>
                     <div class="row padding card-body align-items-center">
                         <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/midwifery.jpg" alt="image" style="">
+                            <img class="img-fluid card-img" src="images/driving.jpg" alt="image" style="">
                         </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">MIDWIFERY INTERNSHIP</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story by The Editor
+                        <div class="col-md-12 col-lg-8">                
+                           
+                            <h1 class="card-title">Ooops!....</h1>
+                            <h5 style="font-weight: bold;" class="d-flex justify-content-between">
+                                <span>                            
+                                    <a href="/feed" 
+                                                style="text-decoration: none; ">Looks like there are No Published Posts on Internship Yet...</a>
                                 </span>
-                                <img class="img-fluid" src="images/lukard_avatar.jpg" alt="Lukenge-Benard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
+                                <img class="img-fluid" src="images/avatarT.jpg" alt="lukard"
+                                            style="width: 40px; margin-top: -15px; border-radius: 100%;">
+                            </h5>
+                            <h6 class="card-text" style="color: rgb(22, 15, 15); font-weight: bold;">
+                                No worries though! This is an an easy solve.                        
                             </h6>
-                            <p class="card-text">
-                                “In Uganda, midwives have been traditionally prepared mainly to perform the role of subordinates to
-                                the doctors. The Bachelor of Science in Midwifery program is to elevate midwifery to an educational
-                                level that prepares midwives to exercise critical thinking and judgement in the provision of
-                                comprehensive and integrated reproductive health practice, as well as community-based health care.
-                                ...
-                                <a href="/midwifery-internship" class="btn btn-outline-primary">Read more</a>
-                            </p>
-
+                            <h6 class="card-text" style="font-weight: bold;">
+                                First stop would be to check with your Campus Editor;                       
+                            </h6>
+                            <h6 class="card-text" style="color: red; font-weight: bold;">
+                                If symptoms persist, remember to visit the code doctor!                        
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -56,3 +110,4 @@
             </div>
         </div>
     </div>
+{{/if}}

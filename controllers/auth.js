@@ -22,6 +22,7 @@ exports.login = async (req, res) => {
       });
     }
       
+      
       conn.query("SELECT * FROM tbl_user WHERE email = ?", [email], async (error, results) => {
 
           if (!results || !(await bcrypt.compare(password, results[0].password)) ) {
@@ -137,45 +138,56 @@ exports.upload =  (req, res) => {
     
       // name of the input is sampleFile
       sampleFile = req.files.sampleFile;
-      uploadPath = path.join(__dirname, "../upload", sampleFile.name);
+      // uploadPath = path.join(__dirname, "../upload", sampleFile.name);
       const imageV2 = sampleFile.data.toString('base64');
-    
-      // use mv() to place file on the server
-      sampleFile.mv(uploadPath, function(err){
-          if(err) return res.status(500).send(err);
 
-              const token = req.cookies.jwt;
-              if (token) {
-                  jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-                      if (err) {
+      // pool.getConnection((err, connection) => {
+      //     if(err) throw err; //not connected
+          
+      //     connection.query('UPDATE tbl_user SET profile_photo = ? WHERE user_id = ?', [imageV2,req.session.user.user_id], (err, rows) => {
+      //         // Once done, release connection
+      //         connection.release();
+              
+      //         if(!err){
+      //             req.session.msg = "Profile Photo Updated";
+      //             return res.redirect('/account');                      
+      //         } else{
+      //             console.log(err);
+      //         }
+      //     });
+      // }); 
+
+      const token = req.cookies.jwt;
+      if (token) {
+          jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+              if (err) {
+                  console.log(err);
+              } else {           
+                  conn.query('UPDATE tbl_user SET profile_photo = ? WHERE user_id = ?', [imageV2, decodedToken.id], (err, rows) => {
+                                    
+                      if(!err){
+                          req.session.msg = "Profile Photo Updated";
+                          return res.redirect('/account');                      
+                      } else{
                           console.log(err);
-                      } else {           
-                          // conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
-                          //     if(!err){
-                          //         return res.render("maintabs/dashboard", {layout: 'tabs', rows});
-                          //     } else{
-                          //         console.log(err);
-                          //     }
-                          // });            
-                          conn.query('UPDATE tbl_user SET profile_photo = ? WHERE user_id = ?', [imageV2, decodedToken.id], (err, rows) => {
-                                            
-                              if(!err){
-                                  req.session.msg = "Profile Photo Updated";
-                                  return res.redirect('/account');                      
-                              } else{
-                                  console.log(err);
-                              }
-                          });
                       }
                   });
-              } else {
-                  console.log("No token present");
-              } 
+              }
+          });
+      } else {
+          console.log("No token present");
+      } 
+
+      // sampleFile.mv(uploadPath, function(err){
+      //     if(err) return res.status(500).send(err);
 
 
-      });
-      
-    
+
+      // });
+
+
+
+
     
   } catch (error) {
     console.log(error);
@@ -378,8 +390,6 @@ exports.update = (req, res) => {
 
 };
 
-//not yet cleaned....
-
 exports.editName = (req, res) => {
   try {
     const token = req.cookies.jwt;
@@ -387,14 +397,7 @@ exports.editName = (req, res) => {
           jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
               if (err) {
                   console.log(err);
-              } else {           
-                  // conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
-                  //     if(!err){
-                  //         return res.render("maintabs/dashboard", {layout: 'tabs', rows});
-                  //     } else{
-                  //         console.log(err);
-                  //     }
-                  // }); 
+              } else { 
                   
                   try {
                 
@@ -581,23 +584,14 @@ exports.editPassword = (req, res) => {
           jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
               if (err) {
                   console.log(err);
-              } else {           
-                  // conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
-                  //     if(!err){
-                  //         return res.render("maintabs/dashboard", {layout: 'tabs', rows});
-                  //     } else{
-                  //         console.log(err);
-                  //     }
-                  // });
+              } else {  
                   
                   try {
                 
                     const { currentPassword, newPassword, confirmPassword } = req.body
                     
                     if (!currentPassword || !newPassword || !confirmPassword) {
-                
-                      // pool.getconn((err, conn) => {
-                      //     if(err) throw err; //not connected                  
+                                
                           conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                 
                               if(!err){
@@ -607,10 +601,6 @@ exports.editPassword = (req, res) => {
                                 console.log(err);
                               }
                           });
-                      // });
-                
-                
-                
                       
                     } 
                 
@@ -735,6 +725,21 @@ exports.logout = (req, res) => {
 
 };
 
+exports.approve = (req, res) => {
+  console.log("button pressed!");
+  const { id } = req.body;
+  console.log(id);
+
+    conn.query('UPDATE tbl_post SET post_approval = ? WHERE post_id = ?', [1, id], (err, rows) => {          
+        if(!err){
+            return res.redirect('/editor');                      
+        } else{
+            console.log(err);
+        }
+    });
+
+};
+
 exports.create = (req, res) => {
   try {
     const token = req.cookies.jwt;
@@ -742,76 +747,71 @@ exports.create = (req, res) => {
           jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
               if (err) {
                   console.log(err);
-              } else {           
-                  // conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
-                  //     if(!err){
-                  //         return res.render("maintabs/dashboard", {layout: 'tabs', rows});
-                  //     } else{
-                  //         console.log(err);
-                  //     }
-                  // });  
+              } else {
                   
                   try {
                 
-                    const { date, title, paragraph } = req.body;
+                    const { date, title, paragraph, category } = req.body;
                 
+                    let coverPhoto;
+                    let uploadPath;
+                    
+                    
                     if ( date && title && paragraph  ) {
                 
-                      console.log("Input Only: Date");
-                   
-                      // pool.getconn((err, conn) => {
-                      //   if(err) throw err; //not connected
+                      if(!req.files || Object.keys(req.files).length === 0){
+                          req.session.msg = "No files were uploaded";
+                          return res.status(400).redirect('/account');
+                      }
+                      
+                      // name of the input is coverPhoto
+                      coverPhoto = req.files.coverPhoto;
+                      const image = coverPhoto.data.toString('base64');
                 
-                        conn.query(
-                          "INSERT INTO tbl_post SET ?",
-                          { post_title: title, post_date: date},
-                          (postError, postResults) => {
-                
-                            if (postError) {
-                              console.log(postError);
-                            } else {
-                
-                              conn.query("INSERT INTO tbl_user_vs_post SET ?", { user_id: decodedToken.id, post_id: postResults.insertId}, (error, results) => {
-                                if(error){console.log(error);} else{
-                                  console.log("tbl_user_vs_post reached too!");
-                
-                                  conn.query(
-                                    "INSERT INTO tbl_post_paragraphs SET ?",
-                                  { paragraph: paragraph,  post_id: postResults.insertId},
-                                  (paraError, paragraphResult) => {
-                                    if(paraError){
-                                      console.log(paraError);
-                                    }else {
-                                      console.log("Paragraph created too");
-                                      console.log(decodedToken.id);
-                                      console.log(paragraphResult);
-                                      console.log("Post  ID can still be accessed: ");
-                                      console.log(postResults.insertId);
-                    
-                    
-                                      req.session.msg = "New Post Created";
-                                      return res.redirect("/create");
-                                      
-                                    }
-                                  });
-                
-                                }
-                              });
-                
-                
-                            }
+                      conn.query("INSERT INTO tbl_post SET ?", { post_title: title, post_date: date}, (postError, postResults) => {
+                          if (postError) {console.log(postError);} else {
+
+                            
+                            conn.query("SELECT * FROM tbl_post_category WHERE post_category = ?", [category],  (categoryError, categoryResults) => {
+                              if (categoryError) {console.log(categoryError);} else {
+
+                                conn.query("INSERT INTO tbl_post_vs_category SET ?", { post_id: postResults.insertId, post_category_id: categoryResults[0].post_category_id }, (pvcError, pvcResults) => {
+                                  if(pvcError){console.log(pvcError);} else{
+    
+                                    conn.query("INSERT INTO tbl_user_vs_post SET ?", { user_id: decodedToken.id, post_id: postResults.insertId}, (error, results) => {
+                                      if(error){console.log(error);} else{
+
+                                        conn.query("INSERT INTO tbl_post_paragraphs SET ?", { paragraph: paragraph,  post_id: postResults.insertId}, (paraError, paragraphResult) => {
+                                          if(paraError){console.log(paraError);}else {
+                                            conn.query("INSERT INTO tbl_image SET ?", { image_file: image,  post_id: postResults.insertId}, (imgError, imgResult) => {
+                        
+                                              req.session.msg = "New Post Created";
+                                              return res.redirect("/create");
+                        
+                                            });
+                                          }
+                                        });
+                                      }
+                                    });
+    
+    
+                                  }
+                                });
+
+
+                              }
+                            });
+
+
                           }
-                        );
-                      // }); 
+                      });   
                 
-                    }
-                    
-                    
-                    
+                    }               
+     
                   } catch (error) {
                     console.log(error);
                   }
-                  
+      
               }
           });
       } else {

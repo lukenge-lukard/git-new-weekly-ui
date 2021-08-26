@@ -64,25 +64,37 @@
                         <div class="card-body">
 
                             <div class="container">
-                                <form action="/auth/create" method="post">
+                                <form action="/auth/create" method="post" enctype="multipart/form-data">
                                     <h2>ENGLISH</h2>
                                     <hr>
 
                                     <div class="row">
-                                        <div class="col-md-4 mb-2">
+                                        <div class="col-md-6 mb-2">
                                             <input type="date" name="date" class="form-control">
                                         </div>
-                                        <div class="col-md-4 mb-2">
-                                            <input type="date" class="form-control">
-                                        </div>
-                                        <div class="col-md-4 mb-2"> 
-                                            <select class="form-control" >
-                                                <option value=""><i class="fa fa-user w3-black"></i> New </option>
+                                        {{!-- <div class="col-md-4 mb-2">
+                                        </div> --}}
+                                        <div class="col-md-6 mb-2 d-flex justify-content-between align-items-center "> 
+                                            <span class="mr-2">Category</span>
+                                            <select name="category" class="form-control" >
+                                                <option value=""><i class="fa fa-user w3-black"></i></option>
+                                                <option value="campus101"><i class="fa fa-user w3-black"></i> Campus 101 </option>
+                                                <option value="interview"><i class="fa fa-user w3-black"></i> Interview </option>
+                                                <option value="internship"><i class="fa fa-user w3-black"></i> Internship </option>
+                                                <option value="inspiration"><i class="fa fa-user w3-black"></i> Inspiration </option>
+                                                <option value="uncensored"><i class="fa fa-user w3-black"></i> Uncensored </option>
+                                                <option value="noticeboard"><i class="fa fa-user w3-black"></i> NoticeBoard </option>
                                             </select>
                                         </div>
                                     </div>
                                 
                                     <input type="text" name="title" class="form-control title mt-4" placeholder="Insert a title" style=""><br>
+
+                                    <div class="mb-4 d-flex justify-content-between align-items-center ">
+                                        <span class="mr-2">StoryCoverPhoto</span>
+                                        <input type="file" class="form-control p-1" name="coverPhoto" accept="image/*" />                                            
+                                    </div>
+
                                     <div class="details">   
                                         <div class="">
                                             <textarea  name="paragraph" class="form-control" style="border:none;height:400px;" placeholder="Write your content"></textarea>
@@ -118,6 +130,38 @@
     </div>
 </div>
 
+                        <!-- Edit Profile Photo -->
+                        {{!-- <div class="col-xl-3 col-sm-6 p-2">
+                            <form action="/auth/upload" method="post" enctype="multipart/form-data">       
+                                <div class="card card-common">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>Edit Profile Photo</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center ">
+                                            <span>Current Photo</span>
+                                            {{#each rows}}
+                                                {{#if this.profile_photo}}
+                                                    <img src="data:image/*;base64,{{this.profile_photo}}"  class="rounded-circle mr-3" alt="User Profile" style="height: 46px; width: 50px;">
+                                                {{else}}
+                                                    <img src="images/avatarT.jpg" width="50" class="rounded-circle mr-3" alt="User Profile" style="height: 46px; width: 50px;">
+                                                {{/if}}
+                                            {{/each}}
+                                        </div>
+                                        <div class="mt-4 pt-3">
+                                            <input type="file" class="form-control py-2 mt-2" name="sampleFile" accept="image/*" />                                            
+                                        </div>
+                                    </div>
+                                    <div class="card-footer text-secondary">
+                                        <input type="submit" class="btn btn-block text-uppercase font-weight-bold text-light bg-info py-2 ">
+                                    </div>
+                                </div>
+                            </form>
+                        </div> --}}
+                        <!-- end of Edit Profile Photo -->
+
 {{#each results}}
 <!--Two column section-->
 <div class="container-fluid">
@@ -131,7 +175,12 @@
                             
                             <h1 style="text-align: center; color: blue;">{{this.post_title}}</h1>
                             <div style="margin-bottom: 10px;">
-                                <img class="d-block w-100" src="images/check3.jpg" alt="First slide">
+                                {{!-- <img class="d-block w-100" src="images/check3.jpg" alt="First slide"> --}}
+                                {{#if this.image_file}}
+                                    <img src="data:image/*;base64,{{this.image_file}}"  class="d-block w-100" alt="User Profile" >
+                                {{else}}
+                                    <img src="images/avatarT.jpg" width="50" class="d-block w-100" alt="User Profile" >
+                                {{/if}}
                                 <div style="margin-top: 15px;">
                                     <div style="font-weight: bold;" class="d-flex justify-content-between align-items-center">
                                         <span style="color: blue;">
@@ -165,7 +214,7 @@
         </div>
     </div>
 </div>
- {{/each}}
+{{/each}}
 
     <!--User Profile-->
     <div class="container-fluid">
@@ -238,7 +287,7 @@
                 <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
                     <div class="row align-items-center mb-5">
                         <div class="col-xl-7">
-                            <h4 class="text-muted mb-4">Recent Customer Activities</h4>
+                            <h4 class="text-muted mb-4">Upcoming Improvements</h4>
                             <div id="accordion">
                                 <div class="card">
                                     <div class="card-header">

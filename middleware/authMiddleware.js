@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-// const User = require('../models/User');
 const conn = require("../db/db.js");
 
 const requireAuth = (req, res, next) => {
@@ -12,8 +11,6 @@ const requireAuth = (req, res, next) => {
         console.log(err.message);
         res.redirect('/login');
       } else {
-        console.log(decodedToken);
-        console.log(token);
         next();
       }
     });
@@ -31,7 +28,6 @@ const checkUser = (req, res, next) => {
         res.locals.user = null;
         next();
       } else {
-        // let user = await User.findById(decodedToken.id);
           conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rowss) => {
             if(!err){
                 console.log("User acquired...");

@@ -13,7 +13,59 @@
         </div>
     </div>
 
-    <!--THIS WEEK ON CAMPUS WEEKLY-->
+        <!-- Stories From Database -->
+{{#if results}}
+
+    {{#each results}}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+                    <div class="card" style="margin-bottom: 10px;">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between">
+                                <div class="text-right text-secondary">
+                                    <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
+                                    <span class="text-muted" style=" font-weight: lighter;">{{this.post_date}}</span>
+                                </div>
+                                <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
+                            </div>
+                        </div>
+                        <div class="row padding card-body align-items-center">
+                            <div class="col-lg-4">
+                                {{#if this.image_file}}
+                                    <img class="img-fluid card-img" src="data:image/*;base64,{{this.image_file}}"  style="">
+                                {{else}}
+                                    <img class="img-fluid card-img" src="images/check3.jpg" alt="image" style="">
+                                {{/if}}
+                            </div>
+                            <div class="col-md-12 col-lg-8">
+                                <h3 class="card-title" style="color: blue;">{{this.post_title}}</h3>
+                                <h6 style="font-weight: bold;" class="d-flex justify-content-between align-items-center">
+                                    <span >
+                                        <i class="fa fa-edit"></i> Story by {{this.surname}}  {{this.firstname}}
+                                    </span>
+                                    {{#if this.profile_photo}}
+                                        <img src="data:image/*;base64,{{this.profile_photo}}"  class="rounded-circle mr-3" style="height: 36px; width: 40px;">
+                                    {{else}}
+                                        <img src="images/avatarT.jpg" class="rounded-circle mr-3" style="height: 36px; width: 40px;">
+                                    {{/if}}
+                                </h6>
+                                <p style="white-space: pre-line;">
+                                    {{this.paragraph}}
+                                    <a href="/story/?id={{this.post_id}}" class="btn btn-outline-primary">see full story</a>
+                                </p>                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {{/each}}
+
+{{else}}
+    
+    <!--Two column section-->
     <div class="container-fluid">
         <div class="row">
             <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
@@ -22,33 +74,35 @@
                         <div class="d-flex justify-content-between">
                             <div class="text-right text-secondary">
                                 <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">June 19, 2021</span>
+                                <span class="text-muted" style=" font-weight: lighter;">-- --, 2021</span>
                             </div>
                             <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
                         </div>
                     </div>
                     <div class="row padding card-body align-items-center">
                         <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/news3.jpg" alt="image" style="">
+                            <img class="img-fluid card-img" src="images/driving.jpg" alt="image" style="">
                         </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">THIS WEEK ON CAMPUS WEEKLY</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story by The Editor
+                        <div class="col-md-12 col-lg-8">                
+                           
+                            <h1 class="card-title">Ooops!....</h1>
+                            <h5 style="font-weight: bold;" class="d-flex justify-content-between">
+                                <span>                            
+                                    <a href="/feed" 
+                                                style="text-decoration: none; ">Looks like there are No Published Posts on Campus 101 Yet...</a>
                                 </span>
-                                <img class="img-fluid" src="images/lukard_avatar.jpg" alt="Lukenge-Benard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
+                                <img class="img-fluid" src="images/avatarT.jpg" alt="lukard"
+                                            style="width: 40px; margin-top: -15px; border-radius: 100%;">
+                            </h5>
+                            <h6 class="card-text" style="color: rgb(22, 15, 15); font-weight: bold;">
+                                No worries though! This is an an easy solve.                        
                             </h6>
-                            <p class="card-text">
-                                
-                                Saying that this has been a rather interesting week would be an extremely unfairly statement to so many! Well, let’s just take a lens! And look at events going backwards throughout this entire week.
-                                &nbsp;
-                                ...
-                                <a href="/saturday-19-june-2021" class="btn btn-outline-primary">Read more</a>
-                                
-                                
-                            </p>
+                            <h6 class="card-text" style="font-weight: bold;">
+                                First stop would be to check with your Campus Editor;                       
+                            </h6>
+                            <h6 class="card-text" style="color: red; font-weight: bold;">
+                                If symptoms persist, remember to visit the code doctor!                        
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -56,228 +110,6 @@
             </div>
         </div>
     </div>
-
-    <!--THIS WEEK ON CAMPUS WEEKLY-->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
-                <div class="card" style="margin-bottom: 10px;">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-right text-secondary">
-                                <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">June 12, 2021</span>
-                            </div>
-                            <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
-                        </div>
-                    </div>
-                    <div class="row padding card-body align-items-center">
-                        <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/news2.jpg" alt="image" style="">
-                        </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">THIS WEEK ON CAMPUS WEEKLY</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story by The Editor
-                                </span>
-                                <img class="img-fluid" src="images/lukard_avatar.jpg" alt="Lukenge-Benard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
-                            </h6>
-                            <p class="card-text">
-                                ...
-                                &nbsp;
-                                All this came to a surprise stand still on the night of Sunday, the 6th June, 2021. Well, to some, it wasn’t really a surprise per say! This special night housed the President’s address to the nation in response to the so called second wave of the famous COVID-19 pandemic in Uganda.
-                                &nbsp;
-                                ...
-                                <a href="/saturday-12-june-2021" class="btn btn-outline-primary">Read more</a>
-                               
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!--FOOD AND RESTAURANTS-->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
-                <div class="card" style="margin-bottom: 10px;">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-right text-secondary">
-                                <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">May 23, 2021</span>
-                            </div>
-                            <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
-                        </div>
-                    </div>
-                    <div class="row padding card-body align-items-center">
-                        <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/food.jpg" alt="image" style="">
-                        </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">FOOD AND RESTAURANTS</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story by The Editor
-                                </span>
-                                <img class="img-fluid" src="images/lukard_avatar.jpg" alt="Lukenge-Benard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
-                            </h6>
-                            <p class="card-text">
-                                In the evening of course, the trend was still the same. Abby’s Joint was the place to meet! This guy made the best Rolex. Combined with some porridge or tea and supper was done.
-                                &nbsp;
-                                ...
-                                <a href="/food-and-restaurants" class="btn btn-outline-primary">Read more</a>
-
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!--THIS WEEK’S EVENTS-->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
-                <div class="card" style="margin-bottom: 10px;">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-right text-secondary">
-                                <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">May 08, 2021</span>
-                            </div>
-                            <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
-                        </div>
-                    </div>
-                    <div class="row padding card-body align-items-center">
-                        <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/new.jpg" alt="image" style="">
-                        </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">THIS WEEK’S EVENTS</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story by The Editor
-                                </span>
-                                <img class="img-fluid" src="images/lukard_avatar.jpg" alt="Lukenge-Benard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
-                            </h6>
-                            <p class="card-text">
-                                Joining in on the week with smiles and energy from last week’s Saturday, this week’s Sunday, 2nd
-                                May, 2021 saw the Freshers face off with the giants from the ongoing students in the different
-                                sports activities that were arranged.
-                                &nbsp;
-                                ...
-                                <a href="/saturday-8-may-2021" class="btn btn-outline-primary">Read more</a>
-
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!--THIS WEEK ON CAMPUS WEEKLY-->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
-                <div class="card" style="margin-bottom: 10px;">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-right text-secondary">
-                                <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">May 01, 2021</span>
-                            </div>
-                            <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
-                        </div>
-                    </div>
-                    <div class="row padding card-body align-items-center">
-                        <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/news.jpg" alt="image" style="">
-                        </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">THIS WEEK ON CAMPUS WEEKLY</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story by The Editor
-                                </span>
-                                <img class="img-fluid" src="images/lukard_avatar.jpg" alt="Lukenge-Benard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
-                            </h6>
-                            <p class="card-text">
-                                Ending the past week; Saturday, 24th April, 2021 saw a fuel tanker truck plunge into R. Nile at
-                                Karuma Bridge killing two people. These were believed to be the driver and the turn man for the
-                                vehicle, registration number UAS 337M, trailer number MMF 450.
-                                &nbsp;
-                                ...
-                                <a href="/saturday-1-may-2021" class="btn btn-outline-primary">Read more</a>
-
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-     <!--THEY ARE BACK!-->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
-                <div class="card" style="margin-bottom: 10px;">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-right text-secondary">
-                                <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">< April 18, 2021</span>
-                            </div>
-                            <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
-                        </div>
-                    </div>
-                    <div class="row padding card-body align-items-center">
-                        <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/midwife2.jpg" alt="image" style="">
-                        </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">THEY ARE BACK!</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story by The Editor
-                                </span>
-                                <img class="img-fluid" src="images/lukard_avatar.jpg" alt="Lukenge-Benard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
-                            </h6>
-                            <p class="card-text">
-                                Leaving on Monday, 22nd February, 2021, dispatched to various hospitals in the region, the present
-                                day year two midwifery students completed their first internship program with the first lot
-                                reporting back to campus on Friday, 19th March, 2021.
-                            </p>
-                            <p class="card-text">
-                                The CampusWeekly™ lens happened to be in the vicinity of some of these extremely happy-to-be-back
-                                members of the health community. Preferring anonymity, the jubilant midwives-to-be interviewed
-                                narrated their experiences to our reporters.
-                                <br>
-                                ...
-                                <br>
-                                <a href="/they-are-back" class="btn btn-outline-primary">Read more</a>
-                            </p>              
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
+{{/if}}
 
   

@@ -13,7 +13,59 @@
         </div>
     </div>
 
-    <!--I AM NOT FINE-->
+     <!-- Stories From Database -->
+{{#if results}}
+
+    {{#each results}}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+                    <div class="card" style="margin-bottom: 10px;">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between">
+                                <div class="text-right text-secondary">
+                                    <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
+                                    <span class="text-muted" style=" font-weight: lighter;">{{this.post_date}}</span>
+                                </div>
+                                <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
+                            </div>
+                        </div>
+                        <div class="row padding card-body align-items-center">
+                            <div class="col-lg-4">
+                                {{#if this.image_file}}
+                                    <img class="img-fluid card-img" src="data:image/*;base64,{{this.image_file}}"  style="">
+                                {{else}}
+                                    <img class="img-fluid card-img" src="images/check3.jpg" alt="image" style="">
+                                {{/if}}
+                            </div>
+                            <div class="col-md-12 col-lg-8">
+                                <h3 class="card-title" style="color: blue;">{{this.post_title}}</h3>
+                                <h6 style="font-weight: bold;" class="d-flex justify-content-between align-items-center">
+                                    <span >
+                                        <i class="fa fa-edit"></i> Story by {{this.surname}}  {{this.firstname}}
+                                    </span>
+                                    {{#if this.profile_photo}}
+                                        <img src="data:image/*;base64,{{this.profile_photo}}"  class="rounded-circle mr-3" style="height: 36px; width: 40px;">
+                                    {{else}}
+                                        <img src="images/avatarT.jpg" class="rounded-circle mr-3" style="height: 36px; width: 40px;">
+                                    {{/if}}
+                                </h6>
+                                <p style="white-space: pre-line;">
+                                    {{this.paragraph}}
+                                    <a href="/story/?id={{this.post_id}}" class="btn btn-outline-primary">see full story</a>
+                                </p>                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {{/each}}
+
+{{else}}
+    
+    <!--Two column section-->
     <div class="container-fluid">
         <div class="row">
             <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
@@ -22,34 +74,35 @@
                         <div class="d-flex justify-content-between">
                             <div class="text-right text-secondary">
                                 <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">July 02, 2021</span>
+                                <span class="text-muted" style=" font-weight: lighter;">-- --, 2021</span>
                             </div>
                             <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
                         </div>
                     </div>
                     <div class="row padding card-body align-items-center">
                         <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/lukard_logo.jpg" alt="image" style="">
+                            <img class="img-fluid card-img" src="images/driving.jpg" alt="image" style="">
                         </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">I AM NOT FINE</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story From
-                                    <a href="https://adventuresoflukard.herokuapp.com" target="_blank"
-                                        style="text-decoration: none; ">Lukard Adventures</a>
+                        <div class="col-md-12 col-lg-8">                
+                           
+                            <h1 class="card-title">Ooops!....</h1>
+                            <h5 style="font-weight: bold;" class="d-flex justify-content-between">
+                                <span>                            
+                                    <a href="/feed" 
+                                                style="text-decoration: none; ">Looks like there are No Published Posts on Uncensored Yet...</a>
                                 </span>
-                                <img class="img-fluid" src="images/lukardlogo.jpg" alt="lukard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
+                                <img class="img-fluid" src="images/avatarT.jpg" alt="lukard"
+                                            style="width: 40px; margin-top: -15px; border-radius: 100%;">
+                            </h5>
+                            <h6 class="card-text" style="color: rgb(22, 15, 15); font-weight: bold;">
+                                No worries though! This is an an easy solve.                        
                             </h6>
-                            <p class="card-text">
-                                Do not let my show fool you. Please don’t! I am not fine. I know I am supposed to be alright; but I am not. I am very much afraid to tell anyone either because I pretty much do not want to make anyone uncomfortable.
-                                &nbsp;
-                                ...
-                                <a href="https://adventuresoflukard.herokuapp.com/fine" class="btn btn-outline-primary">Read more</a>
-                                
-                                
-                            </p>
+                            <h6 class="card-text" style="font-weight: bold;">
+                                First stop would be to check with your Campus Editor;                       
+                            </h6>
+                            <h6 class="card-text" style="color: red; font-weight: bold;">
+                                If symptoms persist, remember to visit the code doctor!                        
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -57,51 +110,6 @@
             </div>
         </div>
     </div>
-
-    <!--POWERLESS-->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
-                <div class="card" style="margin-bottom: 10px;">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-right text-secondary">
-                                <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">July 02, 2021</span>
-                            </div>
-                            <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
-                        </div>
-                    </div>
-                    <div class="row padding card-body align-items-center">
-                        <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/lukard_logo.jpg" alt="image" style="">
-                        </div>
-                        <div class="col-md-12 col-lg-8">
-                            <h3 class="card-title">POWERLESS</h3>
-                            <h6 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>
-                                    <i class="fa fa-edit"></i> Story From
-                                    <a href="https://adventuresoflukard.herokuapp.com" target="_blank"
-                                        style="text-decoration: none; ">Lukard Adventures</a>
-                                </span>
-                                <img class="img-fluid" src="images/lukardlogo.jpg" alt="lukard"
-                                    style="width: 40px; margin-top: -15px; border-radius: 100%;">
-                            </h6>
-                            <p class="card-text">
-                                Some days are not exactly that great – at campus! Yeah, to be fair, most of them are fun; I mean for
-                                those at campus or gone through campus you know what I am talking about. Every class you take is
-                                your very own decision.
-                                &nbsp;
-                                ...
-                                <a href="/powerless" class="btn btn-outline-primary">Read more</a>
-                                
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
+{{/if}}
 
 
