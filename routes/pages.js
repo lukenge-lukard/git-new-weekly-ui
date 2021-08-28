@@ -40,16 +40,27 @@ router.get("/account", requireAuth, (req, res)=>{
                         }
                         if(rows[0].date_of_birth){
                             rows[0].date_of_birth = truncateDate(rows[0].date_of_birth.toString(), 17);
-
                         }
 
-                        var msg = req.session.msg;
-                        req.session.msg = null; 
-                        res.render("maintabs/user-account", {
-                            layout: 'accounts',
-                            message: msg ? msg : null,
-                            rows
-                        });
+                        const { cookies } = req;
+                        if(cookies.msg){
+                            var msg = cookies.msg;
+                            res.clearCookie("msg");
+                            return res.render("maintabs/user-account", {
+                                layout: 'accounts',
+                                message: msg ? msg : null,
+                                rows
+                            });                            
+                        }
+                        else {
+                            var msg;
+                            return res.render("maintabs/user-account", {
+                                layout: 'accounts',
+                                message: msg ? msg : null,
+                                rows
+                            });
+                        }
+                        
                     } else{
                         console.log(err);
                     }

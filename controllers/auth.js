@@ -117,7 +117,8 @@ exports.upload =  (req, res) => {
       let uploadPath;
     
       if(!req.files || Object.keys(req.files).length === 0){
-          req.session.msg = "No files were uploaded";
+          const message = "No files were uploaded"; 
+          res.cookie("msg", message, { httpOnly: true });
           return res.status(400).redirect('/account');
       }
     
@@ -134,7 +135,8 @@ exports.upload =  (req, res) => {
                   conn.query('UPDATE tbl_user SET profile_photo = ? WHERE user_id = ?', [imageV2, decodedToken.id], (err, rows) => {
                                     
                       if(!err){
-                          req.session.msg = "Profile Photo Updated";
+                          const message = "Profile Photo Updated"; 
+                          res.cookie("msg", message, { httpOnly: true }); 
                           return res.redirect('/account');                      
                       } else{
                           console.log(err);
