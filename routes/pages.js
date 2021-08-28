@@ -17,11 +17,45 @@ var words = JSON.parse(data);
 router.get("/", (req, res)=>{
     res.render("admin/index", {layout: 'landingPage'});
 });
+// router.get("/login",  (req, res)=>{
+//     res.render("admin/login", {layout: 'landingPage'});
+// });
 router.get("/login",  (req, res)=>{
-    res.render("admin/login", {layout: 'landingPage'});
+    const { cookies } = req;
+    if(cookies.msg){
+        var msg = cookies.msg;
+        res.clearCookie("msg");
+        return res.render("admin/login", {
+            layout: 'landingPage',
+            message: msg ? msg : null,
+        });                            
+    }
+    else {
+        var msg;
+        return res.render("admin/login", {
+            layout: 'landingPage',
+            message: msg ? msg : null,
+        });
+    }
 });
+
 router.get("/register",  (req, res)=>{
-    res.render("admin/register", {layout: 'landingPage'});
+    const { cookies } = req;
+    if(cookies.msg){
+        var msg = cookies.msg;
+        res.clearCookie("msg");
+        return res.render("admin/register", {
+            layout: 'landingPage',
+            message: msg ? msg : null,
+        });                            
+    }
+    else {
+        var msg;
+        return res.render("admin/register", {
+            layout: 'landingPage',
+            message: msg ? msg : null,
+        });
+    }
 });
 
 // Side bar link routers
@@ -60,7 +94,7 @@ router.get("/account", requireAuth, (req, res)=>{
                                 rows
                             });
                         }
-                        
+
                     } else{
                         console.log(err);
                     }
@@ -237,15 +271,39 @@ router.get("/create", requireAuth, (req, res)=>{
                                 for(let i = 0; i < results.length; i++){
                                     results[i].paragraph = nl2br(results[i].paragraph);
                                 }
+
+                                const { cookies } = req;
+                                if(cookies.msg){
+                                    var msg = cookies.msg;
+                                    res.clearCookie("msg");
+                                    return res.render("maintabs/create", {
+                                        layout: 'create',
+                                        message: msg ? msg : null,
+                                        rows,
+                                        results
+                                    });                            
+                                }
+                                else {
+                                    var msg;
+                                    return res.render("maintabs/create", {
+                                        layout: 'create',
+                                        message: msg ? msg : null,
+                                        rows,
+                                        results
+                                    });
+                                }
+
                                 // console.log(results);
-                                var msg = req.session.msg;
-                                req.session.msg = null; 
-                                return res.render("maintabs/create", {
-                                    layout: 'create',
-                                    message: msg ? msg : null,
-                                    rows,
-                                    results
-                                });
+                                // var msg = req.session.msg;
+                                // req.session.msg = null; 
+                                // return res.render("maintabs/create", {
+                                //     layout: 'create',
+                                //     message: msg ? msg : null,
+                                //     rows,
+                                //     results
+                                // });
+
+
                             } else {
                                 console.log(err);
                             }

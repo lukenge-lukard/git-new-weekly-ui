@@ -9,20 +9,18 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
     
     if (!email || !password) {
-      return res.status(400).render("admin/login", {
-        message: "Please provide an email and password",
-        layout: 'landingPage',
-      });
+      const message = "Please provide an email and password"; 
+      res.cookie("msg", message, { httpOnly: true });
+      return res.status(400).redirect('/login');
     }
       
       
       conn.query("SELECT * FROM tbl_user WHERE email = ?", [email], async (error, results) => {
 
           if (!results || !(await bcrypt.compare(password, results[0].password)) ) {
-              res.status(401).render("admin/login", {
-                message: "Email or Password is Incorrecct",
-                layout: 'landingPage',
-              });
+            const message = "Email or Password is Incorrecct"; 
+            res.cookie("msg", message, { httpOnly: true });
+            return res.status(401).redirect('/login');
 
           } else {
             const id = results[0].user_id;
@@ -55,17 +53,15 @@ exports.register = (req, res) => {
   const { surname, firstname, email, password, passwordConfirm } = req.body;
 
   if (!surname || !firstname || !email || !password) {
-    return res.status(400).render("admin/register", {
-      message: "Please provide name, email and password",
-      layout: 'landingPage',
-    });
+    const message = "Please provide name, email and password"; 
+    res.cookie("msg", message, { httpOnly: true });
+    return res.status(400).redirect('/register');
   }
 
   if ( !passwordConfirm) {
-    return res.status(400).render("admin/register", {
-      message: "Please re-fill form and comfirm password",
-      layout: 'landingPage',
-    });
+    const message = "Please re-fill form and comfirm password"; 
+    res.cookie("msg", message, { httpOnly: true });
+    return res.status(400).redirect('/register');
   }
 
     conn.query(
@@ -77,15 +73,14 @@ exports.register = (req, res) => {
           console.log(error);
         }
         if (results.length > 0) {
-          return res.render("admin/register", {
-            message: "That email is already in use",
-            layout: 'landingPage',
-          });
-        } else if (password !== passwordConfirm) {
-          return res.render("admin/register", {
-            message: "Passwords do not match",
-            layout: 'landingPage',
-          });
+          const message = "That email is already in use"; 
+          res.cookie("msg", message, { httpOnly: true });
+          return res.status(400).redirect('/register');
+        } 
+        else if (password !== passwordConfirm) {
+          const message = "Passwords do not match"; 
+          res.cookie("msg", message, { httpOnly: true });
+          return res.status(400).redirect('/register');
         }
   
         let hashedPassword = await bcrypt.hash(password, 8);
@@ -98,10 +93,9 @@ exports.register = (req, res) => {
               if (error) {
                 console.log(error);
               } else {
-                return res.render("admin/register", {
-                  message: "User registered",
-                  layout: 'landingPage',
-                });
+                const message = "User registered"; 
+                res.cookie("msg", message, { httpOnly: true });
+                return res.status(200).redirect('/register');
               }
             }
           );
@@ -110,6 +104,9 @@ exports.register = (req, res) => {
     );
 
 };
+
+
+// account post routes
 
 exports.upload =  (req, res) => {
   try {
@@ -173,7 +170,9 @@ exports.update = (req, res) => {
                           conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                
                               if(!err){
-                                  req.session.msg = "No field filled";
+                                  // req.session.msg = "No field filled";
+                                  const message = "No field filled"; 
+                                  res.cookie("msg", message, { httpOnly: true });
                                   return res.redirect('/account'); 
                               } else{
                                 console.log(err);
@@ -195,7 +194,9 @@ exports.update = (req, res) => {
                                   conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                 
                                       if(!err){
-                                          req.session.msg = "Sex Updated";
+                                          // req.session.msg = "Sex Updated";
+                                          const message = "Sex Updated"; 
+                                          res.cookie("msg", message, { httpOnly: true });
                                           return res.status(200).redirect('/account'); 
                                       } else{
                                         console.log(err);
@@ -220,7 +221,9 @@ exports.update = (req, res) => {
                                   conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                      
                                       if(!err){
-                                          req.session.msg = "Date Updated";
+                                          // req.session.msg = "Date Updated";
+                                          const message = "Date Updated"; 
+                                          res.cookie("msg", message, { httpOnly: true });
                                           return res.status(200).redirect('/account');
                                       } else{
                                         console.log(err);
@@ -244,7 +247,9 @@ exports.update = (req, res) => {
                                   conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                           
                                       if(!err){
-                                          req.session.msg = "Phone Number Updated";
+                                          // req.session.msg = "Phone Number Updated";
+                                          const message = "Phone Number Updated"; 
+                                          res.cookie("msg", message, { httpOnly: true });
                                           return res.status(200).redirect('/account');
                                       } else{
                                         console.log(err);
@@ -259,7 +264,9 @@ exports.update = (req, res) => {
                           conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                         
                               if(!err){
-                                  req.session.msg = "Fill ALL fields or only ONE in a section and submit";
+                                  // req.session.msg = "Fill ALL fields or only ONE in a section and submit";
+                                  const message = "Fill ALL fields or only ONE in a section and submit"; 
+                                  res.cookie("msg", message, { httpOnly: true });
                                   return res.status(200).redirect('/account');
                               } else{
                                 console.log(err);
@@ -280,7 +287,9 @@ exports.update = (req, res) => {
                                   conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                        
                                       if(!err){
-                                          req.session.msg = "Profile Updated";
+                                          // req.session.msg = "Profile Updated";
+                                          const message = "Profile Updated"; 
+                                          res.cookie("msg", message, { httpOnly: true });
                                           return res.status(200).redirect('/account');
                                       } else{
                                         console.log(err);
@@ -325,7 +334,9 @@ exports.editName = (req, res) => {
                           conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                               
                               if(!err){
-                                  req.session.msg = "No field filled";
+                                  // req.session.msg = "No field filled";
+                                  const message = "No field filled"; 
+                                  res.cookie("msg", message, { httpOnly: true });
                                   return res.status(400).redirect('/account');
                               } else{
                                 console.log(err);
@@ -346,7 +357,9 @@ exports.editName = (req, res) => {
                                   conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                        
                                       if(!err){
-                                          req.session.msg = "Surname Updated";
+                                          // req.session.msg = "Surname Updated";
+                                          const message = "Surname Updated"; 
+                                          res.cookie("msg", message, { httpOnly: true });
                                           return res.status(200).redirect('/account');
                                       } else{
                                         console.log(err);
@@ -370,7 +383,9 @@ exports.editName = (req, res) => {
                                   conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                         
                                       if(!err){
-                                          req.session.msg = "First Name Updated";
+                                          // req.session.msg = "First Name Updated";
+                                          const message = "First Name Updated"; 
+                                          res.cookie("msg", message, { httpOnly: true });
                                           return res.status(200).redirect('/account');
                                       } else{
                                         console.log(err);
@@ -393,7 +408,9 @@ exports.editName = (req, res) => {
                                   conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                        
                                       if(!err){
-                                          req.session.msg = "Username Updated";
+                                          // req.session.msg = "Username Updated";
+                                          const message = "Username Updated"; 
+                                          res.cookie("msg", message, { httpOnly: true });
                                           return res.status(200).redirect('/account');
                                       } else{
                                         console.log(err);
@@ -408,7 +425,9 @@ exports.editName = (req, res) => {
                           conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                              
                               if(!err){
-                                  req.session.msg = "Fill ALL fields or only ONE in a section and submit";
+                                  // req.session.msg = "Fill ALL fields or only ONE in a section and submit";
+                                  const message = "Fill ALL fields or only ONE in a section and submit"; 
+                                  res.cookie("msg", message, { httpOnly: true });
                                   return res.status(400).redirect('/account');
                               } else{
                                 console.log(err);
@@ -431,7 +450,9 @@ exports.editName = (req, res) => {
                                   conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                           
                                       if(!err){
-                                          req.session.msg = "Profile Updated";
+                                          // req.session.msg = "Profile Updated";
+                                          const message = "Profile Updated"; 
+                                          res.cookie("msg", message, { httpOnly: true });
                                           return res.status(200).redirect('/account');
                                       } else{
                                         console.log(err);
@@ -477,7 +498,9 @@ exports.editPassword = (req, res) => {
                           conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                 
                               if(!err){
-                                  req.session.msg = "Please fill all the password fields.";
+                                  // req.session.msg = "Please fill all the password fields.";
+                                  const message = "Please fill all the password fields."; 
+                                  res.cookie("msg", message, { httpOnly: true });
                                   return res.status(400).redirect('/account');
                               } else{
                                 console.log(err);
@@ -490,7 +513,9 @@ exports.editPassword = (req, res) => {
                           conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                             
                               if(!err){
-                                  req.session.msg = "New Passwords do not match";
+                                  // req.session.msg = "New Passwords do not match";
+                                  const message = "New Passwords do not match"; 
+                                  res.cookie("msg", message, { httpOnly: true });
                                   return res.status(401).redirect('/account');
                               } else{
                                 console.log(err);
@@ -513,7 +538,9 @@ exports.editPassword = (req, res) => {
                                     conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                         
                                         if(!err){
-                                            req.session.msg = "Password is Incorrect";
+                                            // req.session.msg = "Password is Incorrect";
+                                            const message = "Password is Incorrect"; 
+                                            res.cookie("msg", message, { httpOnly: true });
                                             return res.status(401).redirect('/account');
                                         } else{
                                           console.log(err);
@@ -536,7 +563,9 @@ exports.editPassword = (req, res) => {
                                               conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
                                                                
                                                   if(!err){
-                                                      req.session.msg = "Password Changed";
+                                                      // req.session.msg = "Password Changed";
+                                                      const message = "Password Changed"; 
+                                                      res.cookie("msg", message, { httpOnly: true });
                                                       return res.status(200).redirect('/account');
                                                   } else{
                                                     console.log(err);
@@ -564,22 +593,24 @@ exports.editPassword = (req, res) => {
   }
 };
 
+// end of account routes
+
 exports.logout = (req, res) => {
   const token = req.cookies.jwt;
   if (token) {
       jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
           if (err) {
               console.log(err);
-          } else { 
-
+          } else {
               res.clearCookie("jwt");
-              return res.redirect('/login');              
-              
+              const message = "Session Logged out!"; 
+              res.cookie("msg", message, { httpOnly: true });
+              return res.redirect('/login');           
           }
       });
   } else {
       console.log("No token present");
-  }   
+  } 
 };
 
 exports.approve = (req, res) => {
@@ -617,7 +648,9 @@ exports.create = (req, res) => {
                     if ( date && title && paragraph && category ) {
                 
                       if(!req.files || Object.keys(req.files).length === 0){
-                          req.session.msg = "No files were uploaded";
+                          // req.session.msg = "No files were uploaded";
+                          const message = "No files were uploaded"; 
+                          res.cookie("msg", message, { httpOnly: true });
                           return res.status(400).redirect('/create');
                       }
                       
@@ -640,7 +673,9 @@ exports.create = (req, res) => {
                                           if(paraError){console.log(paraError);}else {
                                             conn.query("INSERT INTO tbl_image SET ?", { image_file: image,  post_id: postResults.insertId}, (imgError, imgResult) => {
                         
-                                              req.session.msg = "New Post Created";
+                                              // req.session.msg = "New Post Created";
+                                              const message = "New Post Created"; 
+                                              res.cookie("msg", message, { httpOnly: true });
                                               return res.redirect("/create");
                         
                                             });
@@ -662,7 +697,9 @@ exports.create = (req, res) => {
                       });   
                 
                     } else {
-                      req.session.msg = "Please fill all fields";
+                      // req.session.msg = "Please fill all fields";
+                      const message = "Please fill all fields"; 
+                      res.cookie("msg", message, { httpOnly: true });
                       return res.redirect("/create");
                     }              
      
