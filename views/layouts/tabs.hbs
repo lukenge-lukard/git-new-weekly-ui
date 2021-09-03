@@ -34,6 +34,23 @@
     <script src="script.js"></script>
     <script src="scrollscript.js">  
     </script>
+    <script>
+        const title = window.document.title;
+        function captureShareLink(link) {
+            console.log(link);
+            if (navigator.share) {
+                navigator.share({
+                    title: `${title}`,
+                    url: `/story/?id=${link}`
+                }).then(() => {
+                    console.log("Thanks for sharing");
+                })
+                .catch(console.error);
+            } else {
+                console.log("not working");
+            }
+        }  
+    </script>
 
    
 </body>

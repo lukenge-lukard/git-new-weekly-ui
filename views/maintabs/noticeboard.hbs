@@ -31,7 +31,8 @@
                                     <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
                                     <span class="text-muted" style=" font-weight: lighter;">{{this.post_date}}</span>
                                 </div>
-                                <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
+                                {{!-- <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a> --}}
+                                <button onclick="captureShareLink({{this.post_id}});" class="btn"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></button>
                             </div>
                         </div>
                         <div class="row padding card-body align-items-center">
