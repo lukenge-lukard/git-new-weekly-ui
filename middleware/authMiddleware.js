@@ -1,6 +1,24 @@
 const jwt = require('jsonwebtoken');
 const conn = require("../db/db.js");
 
+const loginAuth = (req, res, next) => {
+  const token = req.cookies.jwt;
+
+  // check json web token exists & is verified
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+      if (err) {
+        console.log(err.message);
+        next();
+      } else {
+        res.redirect('/feed');
+      }
+    });
+  } else {
+    next();
+  }
+};
+
 const requireAuth = (req, res, next) => {
   const token = req.cookies.jwt;
 
@@ -49,4 +67,4 @@ const checkUser = (req, res, next) => {
 };
 
 
-module.exports = { requireAuth, checkUser };
+module.exports = { requireAuth, checkUser, loginAuth };

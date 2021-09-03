@@ -5,7 +5,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require("path");
 const conn = require("../db/db.js");
-const { requireAuth } = require("../middleware/authMiddleware.js");
+const { requireAuth, loginAuth } = require("../middleware/authMiddleware.js");
 
 
 // let user_email;
@@ -17,10 +17,8 @@ var words = JSON.parse(data);
 router.get("/", (req, res)=>{
     res.render("admin/index", {layout: 'landingPage'});
 });
-// router.get("/login",  (req, res)=>{
-//     res.render("admin/login", {layout: 'landingPage'});
-// });
-router.get("/login",  (req, res)=>{
+
+router.get("/login", loginAuth, (req, res)=>{
     const { cookies } = req;
     if(cookies.msg){
         var msg = cookies.msg;
@@ -39,7 +37,7 @@ router.get("/login",  (req, res)=>{
     }
 });
 
-router.get("/register",  (req, res)=>{
+router.get("/register", loginAuth, (req, res)=>{
     const { cookies } = req;
     if(cookies.msg){
         var msg = cookies.msg;
@@ -59,6 +57,90 @@ router.get("/register",  (req, res)=>{
 });
 
 // Side bar link routers
+router.get("/admin", requireAuth, (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else { 
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ? AND email = ?",[decodedToken.id, "lukengelukard@gmail.com"], (err, rows) => {
+                    if(rows[0]){
+                        console.log("results received..");
+                        
+                        conn.query("SELECT user_id, surname, firstname FROM tbl_user", (err, results) => {
+                            if(err) console.log(err); else {
+
+                                conn.query("SELECT post_id, post_title, post_date, post_approval FROM tbl_post", (postErr, postResults) => {
+                                    if(postErr) console.log(postErr); else {
+
+                                        function truncateDate(str, n){
+                                            return (str.length > n) ? str.substr(0, n-1) : str;
+                                        }
+                                        function truncate(str, n){
+                                            return (str.length > n) ? str.substr(0, n-1) + ' ...' : str;
+                                        }
+                                        var approvalCount= 0;
+                                        var pendingCount= 0;
+                                        for(let i = 0; i < postResults.length; i++){
+                                            postResults[i].post_date = truncateDate(postResults[i].post_date.toString(), 17);
+                                            postResults[i].post_title = truncate(postResults[i].post_title.toString(), 13);
+                                           
+                                            if(postResults[i].post_approval){
+                                                approvalCount++;
+                                            } else {
+                                                pendingCount++
+                                            }
+
+                                        }
+
+                                        console.log(results);
+                                        console.log(postResults);
+
+                                        console.log(approvalCount);
+                                        console.log(pendingCount);
+
+                                        var numberOfPosts = postResults.length;
+                                        var numberOfUsers = results.length;
+                                        return res.render("admin/admin", {
+                                            layout: 'page-devt',
+                                            rows,
+                                            results,
+                                            numberOfUsers,
+                                            postResults,
+                                            numberOfPosts,
+                                            approvalCount,
+                                            pendingCount
+                                        });
+
+
+                                    }
+    
+                                });
+
+                            }
+
+
+                        });
+                        
+
+
+                    } else {
+                        console.log("results NOT received..");
+                        return res.send("Sorry, you are not an admin!");
+
+                    }
+
+
+                });
+
+            }
+        });
+    } else {
+        console.log("No token present");
+    }   
+});
+
 router.get("/account", requireAuth, (req, res)=>{
     const token = req.cookies.jwt;
     if (token) {

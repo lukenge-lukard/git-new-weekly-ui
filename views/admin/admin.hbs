@@ -1,0 +1,315 @@
+   <!--hr on top-->
+    <div class="container-fluid">
+        <div class="row ">
+            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+                <div class="row align-items-center mr-2">
+                    <div class="col-12">
+                        <h1 style="text-align: center;">ADMIN PAGE</h1>
+                        <hr style="width: 100%; border: 10px solid #051e58;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- cards -->
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+                    <div class="row  mt-md-3 mb-5">
+                        <div class="col-xl-3 col-sm-6 p-2">
+                            <div class="card card-common">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <i class="fa fa-users fa-3x text-info"></i>
+                                        <div class="text-right text-secondary">
+                                            <h5>Users</h5>
+                                            {{#if results}}
+                                                <h3> {{numberOfUsers}} </h3>
+                                            {{else}}
+                                                <h3> 0 </h3>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-secondary">                                  
+                                    <i class="fa fa-refresh mr-3"></i>
+                                    <span>Updated Now</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 p-2">
+                            <div class="card card-common">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <i class="fa fa-television fa-3x text-danger"></i>
+                                        <div class="text-right text-secondary">
+                                            <h5>Total Posts</h5>
+                                            {{#if postResults}}
+                                                <h3> {{numberOfPosts}} </h3>
+                                            {{else}}
+                                                <h3> 0 </h3>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-secondary">                                  
+                                    <i class="fa fa-refresh mr-3"></i>
+                                    <span>Updated Now</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 p-2">
+                            <div class="card card-common">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <i class="fa fa-edit fa-3x text-warning"></i>
+                                        <div class="text-right text-secondary">
+                                            <h5>Pending Posts</h5>
+                                            {{#if postResults}}
+                                                <h3> {{pendingCount}} </h3>
+                                            {{else}}
+                                                <h3> 0 </h3>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-secondary">                                  
+                                    <i class="fa fa-refresh mr-3"></i>
+                                    <span>Updated Now</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 p-2">
+                            <div class="card card-common">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <i class="fa fa-handshake-o fa-3x text-success"></i>
+                                        <div class="text-right text-secondary">
+                                            <h5>Approved Posts</h5>
+                                            {{#if postResults}}
+                                                <h3> {{approvalCount}} </h3>
+                                            {{else}}
+                                                <h3> 0 </h3>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-secondary">                                  
+                                    <i class="fa fa-refresh mr-3"></i>
+                                    <span>Updated Now</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- end of cards -->
+
+    <!-- tables -->
+    <section>
+        <div class="container-fluid">
+            <div class="row mb-5">
+                <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+                    <div class="row ">
+                        <div class="col-xl-6 col-12 mb-4 mb-xl-0">
+                            <h3 class="text-muted text-center mb-3">CW Users</h3>
+                            <table class="table table-striped bg-light text-center">
+                                <thead>
+                                    <tr class="text-muted">
+                                        <th>#</th>
+                                        <th>Surname</th>
+                                        <th>Firstname</th>
+                                        <th>Contact</th>
+                                    </tr>
+                                </thead>
+                                {{#if results}}
+                                    {{#each results}}
+                                        <tbody>
+                                            <tr>
+                                                <th>{{this.user_id}}</th>
+                                                <td>{{this.surname}}</td>
+                                                <td>{{this.firstname}}</td>
+                                                <td><button type="button" class="btn btn-info btn-sm">Message</button></td>
+                                            </tr>
+                                        </tbody>
+                                    {{/each}}
+                                {{else}}
+                                    <h3> No Users Yet... </h3>
+                                {{/if}}
+                            </table>
+
+                            <!-- pagination -->
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            <span>&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item active">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            1
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            2
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            3
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            <span>&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <!-- end of pagination -->
+
+                        </div>
+                        <div class="col-xl-6 col-12">
+                            <h3 class="text-muted text-center mb-3">CW Posts</h3>
+                            <table class="table table-dark table-hover text-center">
+                                <thead>
+                                    <tr class="text-muted">
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                {{#if postResults}}
+                                    {{#each postResults}}
+                                        <tbody>
+                                            <tr>
+                                                <th>{{this.post_id}}</th>
+                                                <td>{{this.post_title}}</td>
+                                                <td>{{this.post_date}}</td>
+                                                {{#if this.post_approval}}
+                                                    <td><span class="badge badge-success  py-2">Approved</span></td>
+                                                {{else}}
+                                                    <td><span class="badge badge-danger  py-2">Pending</span></td>
+                                                {{/if}}
+                                            </tr>
+                                        </tbody>
+                                    {{/each}}
+                                {{else}}
+                                    <h3> No Posts Yet... </h3>
+                                {{/if}}
+                            </table>
+
+                            <!-- pagination -->
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            <span>Previous</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item active">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            1
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            2
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            3
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a href="#" class="page-link py-2 px-3">
+                                            <span>Next</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <!-- end of pagination -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- end of tables -->
+
+    <!--User Profile-->
+    {{!-- <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+                <div class="card" style="margin-bottom: 10px;">
+                    {{#each rows}}
+                    <div class="row padding card-body align-items-center">
+                        <div class="col-lg-4">
+                            {{#if this.profile_photo}}
+                                <img class="img-fluid card-img" src="data:image/*;base64,{{this.profile_photo}}" alt="User Profile" style="">
+                            {{else}}
+                                <img class="img-fluid card-img" src="images/avatarT.jpg" alt="User Profile" style="">
+
+                            {{/if}}
+                        </div>
+                        <div class="col-md-12 col-lg-8">
+                            <h4 class="card-title">USER PROFILE</h4>
+                            <p class="card-text d-flex justify-content-between">
+                                <span style="font-weight: bold;">
+                                    <i class="fa fa-user"></i> NAME: 
+                                </span>
+                                <span>
+                                    {{this.surname}}  {{this.firstname}}
+                                </span>
+                            </p>
+                            <p class="card-text d-flex justify-content-between">
+                                <span style="font-weight: bold;">
+                                    <i class="fa fa-user"></i> SEX: 
+                                </span>
+                                <span>{{this.sex}} </span>
+                            </p>
+                            <p class="card-text d-flex justify-content-between">
+                                <span style="font-weight: bold;">
+                                    <i class="fa fa-user"></i> Date of Birth: 
+                                </span>
+                                <span>{{this.date_of_birth}}  </span>
+                            </p>
+                            <p class="card-text d-flex justify-content-between">
+                                <span style="font-weight: bold;">
+                                    <i class="fa fa-user"></i> Email: 
+                                </span>
+                                <span>{{this.email}}  </span>
+                            </p>
+                            <p class="card-text d-flex justify-content-between">
+                                <span style="font-weight: bold;">
+                                    <i class="fa fa-user"></i> Phone number: 
+                                </span>
+                                <span>{{this.phone_number}}  </span>
+                            </p>
+                            <p class="card-text d-flex justify-content-between">
+                                <span style="font-weight: bold;">
+                                    <i class="fa fa-user"></i> Username: 
+                                </span>
+                                <span>{{this.username}}  </span>
+                            </p>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+
+            </div>
+        </div>
+    </div> --}}
+    <!-- end of User Profile-->
+
+     
