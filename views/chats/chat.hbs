@@ -30,19 +30,20 @@
                         </div>
                         <div class="col-xl-6 col-12">
                             <h3 class="text-muted text-center mb-3">CW Room</h3>
-
-                            <div class="card">
-                              <div class="card-body">
-
                                   <div class="chat-container">
                                     <header class="chat-header">
-                                      <span class="d-flex justify-content-between" style="align-items: center;">
-                                        <i class="fas fa-smile" style="font-size: 20px;"></i>
-                                        <span>&nbsp;Room:&nbsp;</span> 
+                                      <span class="d-flex justify-content-between " style="align-items: center;">
+                                        <span>
+                                          <i class="fas fa-smile" style="font-size: 20px;"></i>
+                                          <span>&nbsp;Room:&nbsp;</span> 
+                                        </span>
                                         <span id="room-name" style="color: red;"></span>
                                       </span>
-                                      
                                       <a id="leave-btn" class="btn" style="color: blue;">Leave Room</a>
+
+                                       
+                                      
+                                      
                                     </header>
                                     
                                     <main class="chat-main">
@@ -51,21 +52,20 @@
                                       <div class="chat-messages"></div>
                                     </main>
                                     <div class="chat-form-container">
-                                      <form id="chat-form">
+                                      <form class="d-flex justify-content-between" id="chat-form">
                                         <input
                                           id="msg"
                                           type="text"
+                                          class="form-control"
                                           placeholder="Enter Message"
                                           required
                                           autocomplete="off"
                                         />
-                                        <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
+                                        <button class="btn"><i class="fa fa-send-o"></i> </button>
                                       </form>
                                     </div>
                                   </div>
-                                  
-                              </div>
-                          </div>
+
 
                         </div>
                     </div>
