@@ -25,18 +25,17 @@
                         </div>
                         {{/each}}
                         <ul class="navbar-nav flex-column mt-4">
-                            <li class="nav-item"><a href="/feed" class="nav-link text-white p-3 mb-2 current"><i class="fa fa-home text-light fa-lg mr-3"></i>Feed</a></li>
+                            <li class="nav-item"><a href="/feed" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-home text-light fa-lg mr-3"></i>Feed</a></li>
                             <li class="nav-item"><a href="/account" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-user text-light fa-lg mr-3"></i>Profile</a></li>
                             <li class="nav-item"><a href="/create" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-edit text-light fa-lg mr-3"></i>Create</a></li>
                             <li class="nav-item"><a href="/page-under-devt" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-comments text-light fa-lg mr-3"></i>Chats</a></li>
-                            <li class="nav-item"><a href="/groups" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-users text-light fa-lg mr-3"></i>Groups</a></li>
+                            <li class="nav-item"><a href="/groups" class="nav-link text-white p-3 mb-2 current"><i class="fa fa-users text-light fa-lg mr-3"></i>Groups</a></li>
                             <li class="nav-item"><a href="/page-under-devt" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-bullhorn text-light fa-lg mr-3"></i>Announce</a></li>
                             <li class="nav-item"><a href="/page-under-devt" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-grav text-light fa-lg mr-3"></i>Exhibition</a></li>
                             <li class="nav-item"><a href="/page-under-devt" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-wrench text-light fa-lg mr-3"></i>Settings</a></li>
                         </ul>
 
                     </div>
-                   
                     
                     <!-- end of sidebar -->
 
@@ -83,10 +82,8 @@
                     Press logout to leave
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Stay Here</button> 
-                    <form action="/auth/logout" method="post">
-                        <button type="submit" class="btn btn-danger">Logout</button>
-                    </form>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Stay Here</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Logout</button>
                 </div>
             </div>
         </div>
@@ -112,8 +109,6 @@
         </div>
     </div>
     <!-- end of social modal -->
-
- 
 
    
 

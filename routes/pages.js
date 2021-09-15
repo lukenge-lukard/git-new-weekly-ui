@@ -426,6 +426,48 @@ router.get("/page-under-devt", (req, res)=>{
     } 
 });
 
+router.get("/groups", (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        res.render("chats/index", {layout: 'groups', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    } else {
+        console.log("No token present");
+    } 
+});
+
+router.get("/chat", (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        res.render("chats/chat", {layout: 'groups', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    } else {
+        console.log("No token present");
+    } 
+});
+
 //Main Tabs Scrollable on top
 
 router.get("/campus-101", requireAuth, (req, res)=>{

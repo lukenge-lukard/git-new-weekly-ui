@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+			integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+			crossorigin="anonymous"
+		/>
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="shortcut icon" href="images/campusweeklyfavicon.png" type="image/x-icon">
+    	<title>Campus Weekly ChatRoom 2.0</title>
+		<style>
+		@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
+
+		:root {
+			--dark-color-a: #667aff;
+			--dark-color-b: #7386ff;
+			--light-color: #e6e9ff;
+			--success-color: #5cb85c;
+			--error-color: #d9534f;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: "Roboto", sans-serif;
+			font-size: 16px;
+			background: var(--light-color);
+			margin: 20px;
+		}
+
+		ul {
+			list-style: none;
+		}
+
+		a {
+			text-decoration: none;
+		}
+
+		.btn {
+			cursor: pointer;
+			padding: 5px 15px;
+			background: var(--light-color);
+			color: var(--dark-color-a);
+			border: 0;
+			font-size: 17px;
+		}
+
+		/* Chat Page */
+
+		.chat-container {
+			max-width: 1100px;
+			background: #fff;
+			margin: 30px auto;
+			overflow: hidden;
+		}
+
+		.chat-header {
+			background: var(--dark-color-a);
+			color: #fff;
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			padding: 15px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.chat-main {
+			display: grid;
+			grid-template-columns: 1fr 3fr;
+		}
+
+		.chat-sidebar {
+			background: var(--dark-color-b);
+			color: #fff;
+			padding: 20px 20px 60px;
+			overflow-y: scroll;
+		}
+
+		.chat-sidebar h2 {
+			font-size: 20px;
+			background: rgba(0, 0, 0, 0.1);
+			padding: 10px;
+			margin-bottom: 20px;
+		}
+
+		.chat-sidebar h3 {
+			margin-bottom: 15px;
+		}
+
+		.chat-sidebar ul li {
+			padding: 10px 0;
+		}
+
+		.chat-messages {
+			padding: 30px;
+			max-height: 500px;
+			overflow-y: scroll;
+		}
+
+		.chat-messages .message {
+			padding: 10px;
+			margin-bottom: 15px;
+			background-color: var(--light-color);
+			border-radius: 5px;
+			overflow-wrap: break-word;
+		}
+
+		.chat-messages .message .meta {
+			font-size: 15px;
+			font-weight: bold;
+			color: var(--dark-color-b);
+			opacity: 0.7;
+			margin-bottom: 7px;
+		}
+
+		.chat-messages .message .meta span {
+			color: #777;
+		}
+
+		.chat-form-container {
+			padding: 20px 30px;
+			background-color: var(--dark-color-a);
+		}
+
+		.chat-form-container form {
+			display: flex;
+		}
+
+		.chat-form-container input[type="text"] {
+			font-size: 16px;
+			padding: 5px;
+			height: 40px;
+			flex: 1;
+		}
+
+		/* Join Page */
+		.join-container {
+			max-width: 500px;
+			margin: 80px auto;
+			color: #fff;
+		}
+
+		.join-header {
+			text-align: center;
+			padding: 20px;
+			background: var(--dark-color-a);
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+		}
+
+		.join-main {
+			padding: 30px 40px;
+			background: var(--dark-color-b);
+		}
+
+		.join-main p {
+			margin-bottom: 20px;
+		}
+
+		.join-main .form-control {
+			margin-bottom: 20px;
+		}
+
+		.join-main label {
+			display: block;
+			margin-bottom: 5px;
+		}
+
+		.join-main input[type="text"] {
+			font-size: 16px;
+			padding: 5px;
+			height: 40px;
+			width: 100%;
+		}
+
+		.join-main select {
+			font-size: 16px;
+			padding: 5px;
+			height: 40px;
+			width: 100%;
+		}
+
+		.join-main .btn {
+			margin-top: 20px;
+			width: 100%;
+		}
+
+		@media (max-width: 700px) {
+			.chat-main {
+			display: block;
+			}
+
+			.chat-sidebar {
+			display: none;
+			}
+		}
+
+		</style>
+	</head>
+	<body>
+		{{#if rows}}
+
+				{{#each rows}}
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+								<div class="row align-items-center m-2">
+									<div class="col-xl-2 col-12"></div>
+									<div class="col-xl-8 col-12">
+										<div class="card">
+											<div class="card-body">
+												
+												<div class="join-container">
+													<header class="join-header">
+														<h1><i class="fas fa-smile"></i> ChatRoom</h1>
+													</header>
+													<main class="join-main">
+														<form action="chat">
+																<label for="username">Username</label>
+																<input
+																	type="text"
+																	name="username"
+																	class="form-control"
+																	id="username"
+																	value="{{this.surname}} {{this.firstname}}"
+																	required
+																/>
+																<label for="room">Room</label>
+																<select name="room" id="room" class="form-control">
+																	<option value="18+">18+</option>
+																	<option value="Bankosa">Bankosa</option>
+																	<option value="LUMSA">LUMSA</option>
+																	<option value="ComputerScience">Computer Science</option>
+																	<option value="Arsenal">Arsenal</option>
+																	<option value="Alumni">Alumni</option>
+																</select>
+															<button type="submit" class="btn">Join Chat</button>
+														</form>
+													</main>
+												</div>
+
+											</div>
+										</div>
+									</div>
+									<div class="col-xl-2 col-12"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				{{/each}}
+
+			{{else}}
+			
+			<!--Two column section-->
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+						<div class="card" style="margin-bottom: 10px;">
+							<div class="card-header">
+								<div class="d-flex justify-content-between">
+									<div class="text-right text-secondary">
+										<span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
+										<span class="text-muted" style=" font-weight: lighter;">-- --, 2021</span>
+									</div>
+									<a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
+								</div>
+							</div>
+							<div class="row padding card-body align-items-center">
+								<div class="col-lg-4">
+									<img class="img-fluid card-img" src="images/driving.jpg" alt="image" style="">
+								</div>
+								<div class="col-md-12 col-lg-8">                
+								
+									<h1 class="card-title">Ooops!....</h1>
+									<h5 style="font-weight: bold;" class="d-flex justify-content-between">
+										<span>                            
+											<a href="/feed" 
+														style="text-decoration: none; ">Looks like there are No Group chats yet...</a>
+										</span>
+										<img class="img-fluid" src="images/avatarT.jpg" alt="lukard"
+													style="width: 40px; margin-top: -15px; border-radius: 100%;">
+									</h5>
+									<h6 class="card-text" style="color: rgb(22, 15, 15); font-weight: bold;">
+										No worries though! This is an an easy solve.                        
+									</h6>
+									<h6 class="card-text" style="font-weight: bold;">
+										First stop would be to check with your Campus Editor;                       
+									</h6>
+									<h6 class="card-text" style="color: red; font-weight: bold;">
+										If symptoms persist, remember to visit the code doctor!                        
+									</h6>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		{{/if}}
+		
+	<script>
+        document.getElementById("username").readOnly = true; 
+    </script>
+	</body>
+
+</html>
