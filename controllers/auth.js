@@ -101,9 +101,9 @@ exports.register = (req, res) => {
               if (error) {
                 console.log(error);
               } else {
-                const message = "User registered"; 
+                const message = "User registered, Now Login😉"; 
                 res.cookie("msg", message, { httpOnly: true });
-                return res.status(200).redirect('/register');
+                return res.status(200).redirect('/login');
               }
             }
           );
