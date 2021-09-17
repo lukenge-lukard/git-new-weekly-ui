@@ -74,8 +74,6 @@ app.use("/auth", require("./routes/auth"));
 app.use("/", require("./routes/pages"));
 
 
-// app.listen(PORT, ()=> console.log(`Listening on Port ${PORT}`));
-
 
 
 
@@ -98,18 +96,6 @@ const {
 // const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-
-// Set static folder
-// app.use(express.static(path.join(__dirname, 'public')));
-
-// app.set("view engine", "hbs");
-// app.get("/", (req, res) => {
-//   return res.render("index");
-// });
-
-// app.get("/chat", (req, res) => {
-//   return res.render("chat");
-// });
 
 const botName = 'CW ChatRoom';
 
@@ -162,9 +148,16 @@ io.on('connection', socket => {
       });
     }
   });
-});
 
-// const PORT = process.env.PORT || 3030;
+
+  socket.on('sendMessage', msg => {
+      // console.log(msg);
+      socket.broadcast.emit('sendToAll', msg);
+  });
+
+
+
+});
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

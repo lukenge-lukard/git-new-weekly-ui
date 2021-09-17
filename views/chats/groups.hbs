@@ -1,53 +1,115 @@
-    <head>
-        <style>
-            .login_btn {
-            width: 100%;
-            background: #0761e7 !important;
-            color: white !important;
-            }
-        </style>
-    </head>
-    
-    <!--Two column section-->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
-                <div class="card" style="margin-bottom: 10px;">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-right text-secondary">
-                                <span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
-                                <span class="text-muted" style=" font-weight: lighter;">-- --, 2021</span>
-                            </div>
-                            <a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
-                        </div>
-                    </div>
-                    <div class="row padding card-body align-items-center">
-                        <div class="col-lg-4">
-                            <img class="img-fluid card-img" src="images/driving.jpg" alt="image" style="">
-                        </div>
-                        <div class="col-md-12 col-lg-8">                
-                           
-                            <h1 class="card-title">Ooops!....</h1>
-                            <h5 style="font-weight: bold;" class="d-flex justify-content-between">
-                                <span>                            
-                                    <a href="/feed" 
-                                                style="text-decoration: none; ">Looks like this page is the group page...</a>
-                                </span>
-                                <img class="img-fluid" src="images/avatarT.jpg" alt="lukard"
-                                            style="width: 40px; margin-top: -15px; border-radius: 100%;">
-                            </h5>
-                            <h6 class="card-text">
-                                No worries! Simply Return to...                       
-                            </h6>
-                            <div class="d-flex justify-content-center mt-3 login_container">
-                                <a href="/feed" type="button" name="button" class="btn login_btn m-2">Home</a>  <span style="margin-top: 12px;">or</span>
-                                <a href="/feed" type="button" name="button" class="btn login_btn m-2">Feed</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        
+        
+        {{#if rows}}
 
-            </div>
-        </div>
-    </div>
+				{{#each rows}}
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+                                <div style="display: flex; justify-content: center; align-items: center;">				
+                                    <div class="chat-container">
+                                        <div class="chat-header">
+                                            <div class="logo">
+                                                <i class="fa fa-commenting"></i>
+                                                <h3>Messenger</h3>
+                                            </div>
+                                            <p id="your-name">{{this.surname}} {{this.firstname}}</p>
+                                        </div>
+                                <!-- -------------------------------------------------------- -->
+                                        <div class="chat-section">
+                                            <div class="main-wrapper">
+                                                <div class="chat-content">
+                                                    <div class="message">
+                                                        <div class="message-row other-message">
+                                                            <!-- <div class="message-title">
+                                                                👻<span>Dev AT</span>
+                                                            </div>
+                                                            <div class="message-text">
+                                                                Hello
+                                                            </div>
+                                                            <div class="message-time">
+                                                                April 20
+                                                            </div> -->
+                                                        </div>
+                                                        <div class="message-row you-message">
+                                                            <!-- <div class="message-title">
+                                                                👻<span>User 01</span>
+                                                            </div>
+                                                            <div class="message-text">
+                                                                Ok
+                                                            </div>
+                                                            <div class="message-time">
+                                                                April 20
+                                                            </div> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                    <!-- -------------------------------------- -->
+                                                <form class="msg-tex ">
+                                                    <input type="text" class="form-control" name="msg" id="msg" placeholder="Type Message Here..." autocomplete="off">
+                                                    <button id="btn-send">
+                                                        <i class="fa fa-paper-plane">Send</i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+					
+				{{/each}}
+
+			{{else}}
+			
+			<!--Two column section-->
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
+						<div class="card" style="margin-bottom: 10px;">
+							<div class="card-header">
+								<div class="d-flex justify-content-between">
+									<div class="text-right text-secondary">
+										<span class="badge badge-danger p-2" style="border-radius: 40%; font-weight: lighter;">NEW</span>
+										<span class="text-muted" style=" font-weight: lighter;">-- --, 2021</span>
+									</div>
+									<a href="#" data-toggle="modal" data-target="#sign-out"><i class="fa fa-share-alt fa-lg text-muted p-1"></i></a>
+								</div>
+							</div>
+							<div class="row padding card-body align-items-center">
+								<div class="col-lg-4">
+									<img class="img-fluid card-img" src="images/driving.jpg" alt="image" style="">
+								</div>
+								<div class="col-md-12 col-lg-8">                
+								
+									<h1 class="card-title">Ooops!....</h1>
+									<h5 style="font-weight: bold;" class="d-flex justify-content-between">
+										<span>                            
+											<a href="/feed" 
+														style="text-decoration: none; ">Looks like there are No Group chats yet...</a>
+										</span>
+										<img class="img-fluid" src="images/avatarT.jpg" alt="lukard"
+													style="width: 40px; margin-top: -15px; border-radius: 100%;">
+									</h5>
+									<h6 class="card-text" style="color: rgb(22, 15, 15); font-weight: bold;">
+										No worries though! This is an an easy solve.                        
+									</h6>
+									<h6 class="card-text" style="font-weight: bold;">
+										First stop would be to check with your Campus Editor;                       
+									</h6>
+									<h6 class="card-text" style="color: red; font-weight: bold;">
+										If symptoms persist, remember to visit the code doctor!                        
+									</h6>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		{{/if}}
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/app.js"></script>

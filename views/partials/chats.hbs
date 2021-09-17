@@ -15,7 +15,7 @@
                     <div class="col-xl-2 col-lg-3 col-md-4 sidebar fixed-top">
                         <a href="/feed" class="navbar-brand text-white d-block mx-auto text-center py-3 mb-4 bottom-border">CampusWeekly</a>
                         {{#each rows}}
-                        <div class="bottom-border pb-3 d-flex align-items-center">                          
+                        <div class="bottom-border pb-3 d-flex align-items-center">
                             {{#if this.profile_photo}}
                                 <img src="data:image/*;base64,{{this.profile_photo}}"  class="rounded-circle mr-3" alt="User Profile" style="height: 46px; width: 50px;">
                             {{else}}
@@ -26,9 +26,9 @@
                         {{/each}}
                         <ul class="navbar-nav flex-column mt-4">
                             <li class="nav-item"><a href="/feed" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-home text-light fa-lg mr-3"></i>Feed</a></li>
-                            <li class="nav-item"><a href="/account" class="nav-link text-white p-3 mb-2 current"><i class="fa fa-user text-light fa-lg mr-3"></i>Profile</a></li>
+                            <li class="nav-item"><a href="/account" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-user text-light fa-lg mr-3"></i>Profile</a></li>
                             <li class="nav-item"><a href="/create" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-edit text-light fa-lg mr-3"></i>Create</a></li>
-                            <li class="nav-item"><a href="/chats" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-comments text-light fa-lg mr-3"></i>Chats</a></li>
+                            <li class="nav-item"><a href="/chats" class="nav-link text-white p-3 mb-2 current"><i class="fa fa-comments text-light fa-lg mr-3"></i>Chats</a></li>
                             <li class="nav-item"><a href="/groups" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-users text-light fa-lg mr-3"></i>Groups</a></li>
                             <li class="nav-item"><a href="/page-under-devt" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-bullhorn text-light fa-lg mr-3"></i>Announce</a></li>
                             <li class="nav-item"><a href="/page-under-devt" class="nav-link text-white p-3 mb-2 sidebar-link"><i class="fa fa-grav text-light fa-lg mr-3"></i>Exhibition</a></li>

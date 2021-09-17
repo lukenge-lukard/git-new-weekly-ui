@@ -468,6 +468,27 @@ router.get("/chat", (req, res)=>{
     } 
 });
 
+router.get("/chats", (req, res)=>{
+    const token = req.cookies.jwt;
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+                console.log(err);
+            } else {            
+                conn.query("SELECT * FROM tbl_user WHERE user_id = ?",[decodedToken.id], (err, rows) => {
+                    if(!err){
+                        res.render("chats/groups", {layout: 'chats', rows});
+                    } else{
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    } else {
+        console.log("No token present");
+    } 
+});
+
 //Main Tabs Scrollable on top
 
 router.get("/campus-101", requireAuth, (req, res)=>{
