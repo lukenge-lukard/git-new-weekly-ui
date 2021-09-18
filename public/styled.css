@@ -82,12 +82,11 @@ body {
 
 @media (max-width: 768px) {
   .sidebar {
-    position: static;
-    height: auto;
+    display: none;
   }
 
   .top-navbar {
-    position: static;
+    display: none;
   }
 }
 /* end of navbar */
