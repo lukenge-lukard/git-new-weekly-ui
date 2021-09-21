@@ -101,11 +101,12 @@
                         <a href="/feed" class="navbar-brand text-white d-block mx-auto text-center py-3 mb-4 bottom-border">CampusWeekly</a>
                         {{#each rows}}
                         <div class="bottom-border pb-3 d-flex align-items-center">
-                            {{#if this.profile_photo}}
+                            {{!-- {{#if this.profile_photo}}
                                 <img src="data:image/*;base64,{{this.profile_photo}}"  class="rounded-circle mr-3" alt="User Profile" style="height: 46px; width: 50px;">
                             {{else}}
                                 <img src="images/avatarT.jpg" width="50" class="rounded-circle mr-3" alt="User Profile" style="height: 46px; width: 50px;">
-                            {{/if}}
+                            {{/if}} --}}
+                            <img class="rounded-circle mr-3 imgPreview"  style="height: 46px; width: 50px; background-color: rgb(156, 156, 156);">
                             <a href="#" class="text-white">{{this.surname}}  {{this.firstname}}</a>
                         </div>
                         {{/each}}
@@ -159,11 +160,12 @@
             {{!-- <span class="navbar-toggler-icon"></span> --}}
                 {{#each rows}}
                     <span class="">
-                        {{#if this.profile_photo}}
+                        {{!-- {{#if this.profile_photo}}
                             <img src="data:image/*;base64,{{this.profile_photo}}"  class="rounded-circle mr-3" alt="User Profile" style="height: 46px; width: 50px;">
                         {{else}}
                             <img src="images/avatarT.jpg" width="50" class="rounded-circle mr-3" alt="User Profile" style="height: 46px; width: 50px;">
-                        {{/if}}
+                        {{/if}} --}}
+                        <img class="rounded-circle mr-3 imgPreview3"  style="height: 46px; width: 50px; background-color: rgb(156, 156, 156);">
                     </span>
                 {{/each}}
 
