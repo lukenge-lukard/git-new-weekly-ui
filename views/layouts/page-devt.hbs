@@ -35,6 +35,17 @@
     <script src="script.js"></script>
     <script src="scrollscript.js">  
     </script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const recentImageDataUrl = localStorage.getItem("recent-image");
+
+            if(recentImageDataUrl) {
+                document.querySelector(".imgPreview").setAttribute("src", recentImageDataUrl);
+                document.querySelector(".imgPreview3").setAttribute("src", recentImageDataUrl);
+            }
+        });
+    </script>
 
    
 </body>
