@@ -19,7 +19,8 @@ var words = JSON.parse(data);
 // });
 
 router.get("/", (req, res)=>{
-    conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id WHERE po.post_approval = ? ORDER BY po.post_id DESC", [1], (err, results) => {
+    // conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id WHERE po.post_approval = ? ORDER BY po.post_id DESC", [1], (err, results) => {
+    conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id ORDER BY po.post_id DESC", (err, results) => {
         if(!err){
             function nl2br(str){
                 return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
