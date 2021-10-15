@@ -14,8 +14,39 @@ var words = JSON.parse(data);
 
 // admin routes
 // router.get("*", checkUser);
+// router.get("/", (req, res)=>{
+//     res.render("admin/index", {layout: 'landingPage'});
+// });
+
 router.get("/", (req, res)=>{
-    res.render("admin/index", {layout: 'landingPage'});
+    conn.query("SELECT po.post_id, po.post_title, po.post_date, po.post_approval, pa.paragraph, u.surname, u.firstname, u.profile_photo, i.image_file FROM tbl_post po JOIN tbl_post_paragraphs pa ON po.post_id = pa.post_id JOIN tbl_user_vs_post uvp ON po.post_id = uvp.post_id JOIN tbl_image i ON po.post_id = i.post_id JOIN tbl_user u ON uvp.user_id = u.user_id WHERE po.post_approval = ? ORDER BY po.post_id DESC", [1], (err, results) => {
+        if(!err){
+            function nl2br(str){
+                return str.trim().replace(/(?:\r\n|\r|\n)/g, '\n');
+            }
+            
+            function truncate(str, n){
+                return (str.length > n) ? str.substr(0, n-1) + ' ...' : str;
+            }
+            function truncateDate(str, n){
+                return (str.length > n) ? str.substr(0, n-1) : str;
+            }
+            
+            for(let i = 0; i < results.length; i++){
+                // results[i].post_date = results[i].post_date.toISOString().split('T')[0];
+                results[i].post_date = truncateDate(results[i].post_date.toString(), 17);
+                results[i].paragraph = truncate(nl2br(results[i].paragraph), 200);
+            }
+            
+            return res.render("admin/index", {
+                layout: 'landingPage',
+                results
+            });
+        } else {
+            console.log(err);
+        }
+            
+    });
 });
 
 router.get("/login", loginAuth, (req, res)=>{
