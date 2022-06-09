@@ -149,14 +149,15 @@
                 </div>
             </div>
             <div class="row padding card-body">
-                <div class="col-lg-4">
-                    {{#if this.image_file}}
-                        <img class="img-fluid card-img" src="data:image/*;base64,{{this.image_file}}"  style="" loading="lazy">
-                    {{else}}
-                        <img class="img-fluid card-img" src="images/check3.jpg" alt="image" style="" loading="lazy">
-                    {{/if}}
-                        {{!-- <img class="img-fluid card-img" src="" alt="image" style="background-color:  rgb(156, 156, 156);"> --}}
-                </div>
+                {{#if this.image_file}}
+                   <div class="col-lg-4" style="height: 300px; background-color: rgb(158, 150, 150); background-image: url('data:image/*;base64,{{this.image_file}}');  background-repeat: no-repeat; background-size: cover; background-position: center;">
+                        
+                    </div>
+                {{else}}
+                    <div class="col-lg-4" style="height: 300px; background-color: rgb(158, 150, 150); background-image: url('images/check3.jpg');  background-repeat: no-repeat; background-size: cover; background-position: center;">
+                       
+                    </div>
+               {{/if}}
                 <div class="col-md-12 col-lg-8">
                     <h3 class="card-title" style="color: blue;">{{this.post_title}}</h3>
                     <h6 style="font-weight: bold;" class="d-flex justify-content-between align-items-center">

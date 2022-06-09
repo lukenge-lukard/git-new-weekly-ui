@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/campusgf/news.campusweekly.info
+    - /bin/cp * $DEPLOYPATH
